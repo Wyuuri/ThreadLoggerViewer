@@ -11,5 +11,8 @@ public class MariaApplication {
         String firstProcess = String.valueOf(log.getLaunchProcess(Constants.PATH + "trace_result.log"));
         log.readLineByLine(Constants.PATH + "trace_" + firstProcess + ".log");
         log.getSpawnedProcess(Constants.PATH + "trace_81.log");
+        
+        log.getLogFiles(Constants.PATH);
+        log.getReceiveMsg();
     }
 }
