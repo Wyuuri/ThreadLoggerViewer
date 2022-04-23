@@ -8,5 +8,9 @@ public class Constants {
 	public final static String SEND = "send";
 	public final static String DELIVER = "deliver";
 	public final static String RECEIVE = "receive";
-	
+	public final static String SEND_REGEX = "[{](\\s*)send,";
+	public final static String DELIVER_REGEX = "[{](\\s*)deliver,";
+	public final static String RECEIVE_REGEX = "[{](\\s*)(\\S*)receive(\\s*)(\\S*),";
+	public final static String FILENAME_PREFIX = "trace_";
+	public final static String FILE_EXTENSION = ".log";
 }

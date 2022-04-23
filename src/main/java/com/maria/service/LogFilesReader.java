@@ -18,13 +18,15 @@ public class LogFilesReader {
 	List<String> sortedProcessing = new ArrayList<>();
 	
 	//index 0 --- {send,0}. --- process number String
-	Map<Integer,String> sendMsg = new HashMap<>();
+	static Map<Integer,String> sendMsg = new HashMap<>();
 	
 	//index 0 --- {deliver,0}.
-	Map<Integer,String> deliverMsg = new HashMap<>();
+	static Map<Integer,String> deliverMsg = new HashMap<>();
 	
 	//index 0 --- {receive,0}.
-	Map<Integer,String> receiveMsg = new HashMap<>();
+	static Map<Integer,String> receiveMsg = new HashMap<>();
+	
+	static Map<Integer,String> spawnedProcess = new HashMap<>();
 	
 	public LogFilesReader( ) { }
 	
@@ -62,6 +64,18 @@ public class LogFilesReader {
 		return pidNum;
 	}
 	
+	public static String getProcessNumber(String path) {
+		Pattern pattern = Pattern.compile("(\\d+)");
+        Matcher matcher = pattern.matcher(path);
+        matcher.find();
+        
+        // Last number matched from path
+        return matcher.group(matcher.groupCount());
+        
+		//return path.substring(path.length()-6, path.length()-4);
+	}
+	
+	@Deprecated
 	public int getSpawnedProcess(String path) {
 		int pidNum = 0;
 		
@@ -72,7 +86,7 @@ public class LogFilesReader {
 			StringBuffer sb = new StringBuffer();    //constructs a string buffer with no characters  
 			
 			String line;  
-			while((line=br.readLine())!=null && spawn(line)) {
+			while((line=br.readLine())!=null && isSpawn(line)) {
 					Pattern pattern = Pattern.compile("(\\d+)");
 			        Matcher matcher = pattern.matcher(line);
 
@@ -94,27 +108,23 @@ public class LogFilesReader {
 		return pidNum;
 	}
 	
-	public static boolean spawn(String line) {
+	public static boolean isSpawn(String line) {
 		return line.contains(Constants.SPAWN);
 	}
 	
-	public static boolean send(String line) {
+	public static boolean isSend(String line) {
 		return line.contains(Constants.SEND);
 	}
 	
-	public static boolean receive(String line) {
+	public static boolean isReceive(String line) {
 		return line.contains(Constants.RECEIVE);
 	}
 	
-	public static boolean deliver(String line) {
+	public static boolean isDeliver(String line) {
 		return line.contains(Constants.DELIVER);
 	}
 	
-	public String getProcessNumber(String path) {
-		return path.substring(path.length()-6, path.length()-4);
-	}
-	
-	public void readLineByLine(String path) {
+	public static void readLineByLine(String path) {
 		try {  
 			File file=new File(path);    //creates a new file instance  
 			FileReader fr=new FileReader(file);   //reads the file  
@@ -127,32 +137,37 @@ public class LogFilesReader {
 			
 			String line;
 			int number;
+			String filepath;
 			while((line=br.readLine())!=null) {
 				
-				if(send(line)) {
-					// TODO: number --- extract number from {send,number}.
-					pattern = Pattern.compile("[{](\\s*)send,");
+				if(isSend(line)) {
+					pattern = Pattern.compile(Constants.SEND_REGEX);
 			        matcher = pattern.matcher(line);
 			        matcher.find();
 			        
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					sendMsg.put(number, processNumber);
 				}
-				else if(deliver(line)) {
-					pattern = Pattern.compile("[{](\\s*)deliver,");
+				else if(isDeliver(line)) {
+					pattern = Pattern.compile(Constants.DELIVER_REGEX);
 			        matcher = pattern.matcher(line);
 			        matcher.find();
 			        
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					deliverMsg.put(number, processNumber);
 				}
-				else if(receive(line)) {
-					pattern = Pattern.compile("[{](\\s*)(\\S*)receive(\\s*)(\\S*),");
+				else if(isReceive(line)) {
+					pattern = Pattern.compile(Constants.RECEIVE_REGEX);
 			        matcher = pattern.matcher(line);
 			        matcher.find();
 			        
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					receiveMsg.put(number, processNumber);
+				}
+				else if(isSpawn(line)) {
+					filepath = Constants.PATH + Constants.FILENAME_PREFIX 
+							+ getProcessNumber(line) + Constants.FILE_EXTENSION;
+					readLineByLine(filepath);
 				}
 				
 				sb.append(line);      //appends line to string buffer  
@@ -191,14 +206,18 @@ public class LogFilesReader {
 	}
 	
 	public void getSendMsg( ) {
-		for(int i=0; i<sendMsg.size(); i++) {
-			System.out.println(sendMsg.get(i));
+		for (Integer name: sendMsg.keySet()) {
+		    String key = name.toString();
+		    String value = sendMsg.get(name).toString();
+		    System.out.println(key + " " + value);
 		}
 	}
 	
 	public void getDeliverMsg( ) {
-		for(int i=0; i<deliverMsg.size(); i++) {
-			System.out.println(deliverMsg.get(i));
+		for (Integer name: deliverMsg.keySet()) {
+		    String key = name.toString();
+		    String value = deliverMsg.get(name).toString();
+		    System.out.println(key + " " + value);
 		}
 	}
 	
@@ -206,7 +225,7 @@ public class LogFilesReader {
 		for (Integer name: receiveMsg.keySet()) {
 		    String key = name.toString();
 		    String value = receiveMsg.get(name).toString();
-		    System.out.println(key + " " + value);
+		    System.out.println("" + key + " " + value);
 		}
 	}
 }
