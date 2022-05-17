@@ -11,6 +11,7 @@ public class Constants {
 	public final static String SEND_REGEX = "[{](\\s*)send,";
 	public final static String DELIVER_REGEX = "[{](\\s*)deliver,";
 	public final static String RECEIVE_REGEX = "[{](\\s*)(\\S*)receive(\\s*)(\\S*),";
+	public final static String SPAWNED_REGEX = "[{](\\S*)spawn(\\S*),[{](\\D+),";
 	public final static String FILENAME_PREFIX = "trace_";
 	public final static String FILE_EXTENSION = ".log";
 }

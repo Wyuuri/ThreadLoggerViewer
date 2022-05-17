@@ -26,8 +26,6 @@ public class LogFilesReader {
 	//index 0 --- {receive,0}.
 	static Map<Integer,String> receiveMsg = new HashMap<>();
 	
-	static Map<Integer,String> spawnedProcess = new HashMap<>();
-	
 	public LogFilesReader( ) { }
 	
 	public int getLaunchProcess(String path) {
@@ -138,6 +136,7 @@ public class LogFilesReader {
 			String line;
 			int number;
 			String filepath;
+			String spawnedProc;
 			while((line=br.readLine())!=null) {
 				
 				if(isSend(line)) {
@@ -167,6 +166,7 @@ public class LogFilesReader {
 				else if(isSpawn(line)) {
 					filepath = Constants.PATH + Constants.FILENAME_PREFIX 
 							+ getProcessNumber(line) + Constants.FILE_EXTENSION;
+					
 					readLineByLine(filepath);
 				}
 				
@@ -182,7 +182,7 @@ public class LogFilesReader {
 		}
 	}
 
-	public String[] getLogFiles(String path) {
+	public List<String> getLogFilesNumbers(String path) {
 		
 		//Creating a File object for directory
 	      File directoryPath = new File(path);
@@ -190,13 +190,21 @@ public class LogFilesReader {
 		//List of all files and directories
 	      String contents[] = directoryPath.list();
 	      
-	      System.out.println("List of files and directories in the specified directory:");
+	    //List of processes numbers
+	      List<String> pids = new ArrayList<>();
 	      
-	      for(int i=0; i<contents.length && contents[i].endsWith(".log"); i++) {
-	         System.out.println(contents[i]);
-	      }
+	    //System.out.println("List of files and directories in the specified directory:");
+	      System.out.println("List of process numbers:");
+	    
+	    for(int i=0; i<contents.length && contents[i].endsWith(".log") && contents[i].matches(".*[0-9].*"); i++) {
+	       System.out.println(contents[i]);
+	       
+	       System.out.println(getProcessNumber(contents[i]));
+	       
+	       pids.add(getProcessNumber(contents[i]));
+	    }
 	      
-	      return contents;
+	      return pids;
 	}
 
 	public void getSortedProcessing( ) {
@@ -228,4 +236,5 @@ public class LogFilesReader {
 		    System.out.println("" + key + " " + value);
 		}
 	}
+
 }

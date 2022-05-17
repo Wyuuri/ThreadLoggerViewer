@@ -12,7 +12,7 @@ public class MariaApplication {
         log.readLineByLine(Constants.PATH + "trace_" + firstProcess + ".log");
         log.getSpawnedProcess(Constants.PATH + "trace_81.log");
         
-        log.getLogFiles(Constants.PATH);
+        log.getLogFilesNumbers(Constants.PATH);
         log.getSendMsg();
     }
 }
