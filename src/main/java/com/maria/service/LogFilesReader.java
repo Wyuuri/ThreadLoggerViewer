@@ -15,8 +15,6 @@ import main.java.com.maria.common.Constants;
 
 public class LogFilesReader {
 	
-	List<String> sortedProcessing = new ArrayList<>();
-	
 	//index 0 --- {send,0}. --- process number String
 	static Map<Integer,String> sendMsg = new HashMap<>();
 	
@@ -182,7 +180,7 @@ public class LogFilesReader {
 		}
 	}
 
-	public List<String> getLogFilesNumbers(String path) {
+	private static List<String> getAllProcessesNumbers(String path) {
 		
 		//Creating a File object for directory
 	      File directoryPath = new File(path);
@@ -206,11 +204,39 @@ public class LogFilesReader {
 	      
 	      return pids;
 	}
-
-	public void getSortedProcessing( ) {
-		for(int i=0; i<sortedProcessing.size(); i++) {
-			System.out.println(sortedProcessing.get(i));
+	
+	public static String readHTMLFile_andBeautify() {
+		String res = "";
+		
+		try {  
+			File file=new File(Constants.UI_PATH + Constants.HTML_FILENAME);    //creates a new file instance  
+			FileReader fr=new FileReader(file);   //reads the file  
+			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
+			StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
+		
+			List<String> pids = getAllProcessesNumbers(Constants.PATH);
+			
+			String processes = "";
+			String line;
+			while((line=br.readLine())!=null) {
+				if(line.trim().equals("toBeChanged")) {
+					for(String pid: pids) {
+						processes += "<div class=\"process-style\">" + pid + "</div>";
+					}
+					sb.append(processes);
+					continue;
+				}
+				sb.append(line);
+			}  
+			fr.close();
+			res = sb.toString();
+			System.out.println(res);  
+		}  
+		catch(IOException e) {  
+			e.printStackTrace();
 		}
+		
+		return res;
 	}
 	
 	public void getSendMsg( ) {

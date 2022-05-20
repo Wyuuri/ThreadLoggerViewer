@@ -1,6 +1,7 @@
 package main.java.com.maria;
 import main.java.com.maria.common.Constants;
 import main.java.com.maria.service.LogFilesReader;
+import main.java.com.maria.view.UserInterface;
 
 public class MariaApplication {
 	
@@ -12,7 +13,10 @@ public class MariaApplication {
         log.readLineByLine(Constants.PATH + "trace_" + firstProcess + ".log");
         log.getSpawnedProcess(Constants.PATH + "trace_81.log");
         
-        log.getLogFilesNumbers(Constants.PATH);
+        //log.getAllProcessesNumbers(Constants.PATH);
         log.getSendMsg();
+        
+        UserInterface.createWindow();
+        log.readHTMLFile_andBeautify();
     }
 }
