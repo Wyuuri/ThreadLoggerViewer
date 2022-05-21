@@ -2,6 +2,8 @@ package application;
 	
 import javafx.application.Application;
 import javafx.stage.Stage;
+import main.java.com.maria.common.Constants;
+import main.java.com.maria.service.LogFilesReader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.event.ActionEvent;
@@ -13,6 +15,18 @@ import javafx.scene.web.WebView;
 
 
 public class Main extends Application {
+	 @Override
+	 public void start(Stage primaryStage) throws Exception {
+	     WebView webView = new WebView();
+	     WebEngine webEngine = webView.getEngine();
+	     //webEngine.load( getClass().getResource(Constants.HTML_FILENAME).toString() );
+	     webEngine.loadContent(LogFilesReader.readHTMLFile_andBeautify());
+	     Scene scene = new Scene(webView,600,600);
+	     primaryStage.setScene(scene);
+	     primaryStage.setTitle("Thread Logger Viewer");
+	     primaryStage.show();
+	    }
+	
 	/*@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -26,7 +40,7 @@ public class Main extends Application {
 		}
 	}*/
 	
-	@Override
+	/*@Override
 	public void start(Stage stage) throws Exception {
 		WebView myWebView = new WebView();
 		WebEngine engine = myWebView.getEngine();
@@ -77,7 +91,7 @@ public class Main extends Application {
 		stage.setScene(scene);
 		
 		stage.show();
-	}
+	}*/
 	
 	public static void main(String[] args) {
 		launch(args);
