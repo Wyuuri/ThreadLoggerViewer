@@ -1,4 +1,6 @@
-package main.java.com.maria.view;
+// VIEW ALTERNATIVE: SWING not working in JavaFX
+
+/*package main.java.com.maria.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -52,12 +54,12 @@ public class UserInterface {
 	    
 	    // HTML
 	    pane.setText(LogFilesReader.readHTMLFile_andBeautify());
-	    /*try {  
-	    	pane.setPage(url);
-	    } catch (IOException e) { 
-	    	pane.setContentType("text/html");
-	    	pane.setText("<html>Page not found.</html>");
-	    }*/
+	    //try {  
+	    //	pane.setPage(url);
+	    //} catch (IOException e) { 
+	    //	pane.setContentType("text/html");
+	    //	pane.setText("<html>Page not found.</html>");
+	   // }
 
 	    JScrollPane jScrollPane = new JScrollPane(pane);
 	    jScrollPane.setPreferredSize(new Dimension(540,400));      
@@ -66,3 +68,4 @@ public class UserInterface {
 	    frame.getContentPane().add(panel, BorderLayout.CENTER);    
 	   } 
 }
+*/
