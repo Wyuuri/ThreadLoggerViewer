@@ -20,21 +20,16 @@
          float:left; /* Not supported by JEditorPane */
         }
 
-        hr {
-         border:none;
-         border-top:1px dashed #f00;
-         height:1px;
-         width:20px;
-         rotate:90deg;
+        .grid { width: 200px; height: auto;}
+        rect.dash {
+         fill:white; 
+         stroke:black; 
+         stroke-width:4; 
+         opacity:1.0;
         }
-
-        .history {
-         border-style:dashed;
-         border-color:darkslateblue;
-         height: 200px;
-         width: 10px;
-         margin-left: 10%; /* process-style's width/2 and padding */
-         float:left;
+        line.dash {
+          stroke:rgb(255,0,0);
+          stroke-width:2;
         }
     </style>
     <title>Thread Logger Viewer</title>
@@ -47,10 +42,54 @@
         toBeChanged
     </section>
 
-    <section id="wrapper">
-        <hr><rect class="history"></rect>
-        <hr><rect class="history"></rect>
-    </section>
+    <svg width="100%" height="340" style="margin-left: 30px;">
+        <!-- PROCESS 1 -->
+        <line class="dash" x1="20" y1="0" x2="20" y2="30" stroke-dasharray="4, 5"/>
+        <rect class="dash" x="10" y="30" rx="5" ry="5" width="20" height="300" stroke-dasharray="10, 3"/>
+          
+        <!-- PROCESS 2 -->
+        <line class="dash" x1="140" y1="0" x2="140" y2="30" stroke-dasharray="4, 5"/>
+        <rect class="dash" x="130" y="30" rx="5" ry="5" width="20" height="300" stroke-dasharray="10, 3"/>
+        
+        <!-- PROCESS 3 -->
+        <line class="dash" x1="260" y1="0" x2="260" y2="60" stroke-dasharray="4, 5"/>
+        <rect class="dash" x="250" y="60" rx="5" ry="5" width="20" height="270" stroke-dasharray="10, 3"/>
+      
+        <!-- ARROW TO THE RIGHT -->
+        <defs>
+          <marker id="arrowhead" markerWidth="5" markerHeight="3" 
+            refX="0" refY="1.5" orient="auto">
+            <polygon points="0 0, 5 1.5, 0 3" />
+          </marker>
+        </defs>
+        <line x1="35" y1="50" x2="105" y2="50" stroke="black" 
+          stroke-width="4" marker-end="url(#arrowhead)" />
+        
+        <!-- SELF ARROW -->
+        <defs>
+          <marker id="arrowhead" markerWidth="5" markerHeight="3" 
+            refX="0" refY="1.5" orient="auto">
+            <polygon points="0 0, 5 1.5, 0 3" />
+          </marker>
+        </defs>
+        <line x1="35" y1="150" x2="60" y2="150" stroke="black" 
+          stroke-width="4" />
+        <line x1="62" y1="148" x2="62" y2="172" stroke="black" 
+          stroke-width="4" />
+        <line x1="60" y1="170" x2="55" y2="170" stroke="black" 
+          stroke-width="4" marker-end="url(#arrowhead)" />
+        
+    
+        <!-- ARROW TO THE LEFT -->
+        <defs>
+          <marker id="arrowhead" markerWidth="5" markerHeight="3" 
+            refX="0" refY="1.5" orient="auto">
+            <polygon points="0 0, 5 1.5, 0 3" />
+          </marker>
+        </defs>
+        <line x1="125" y1="300" x2="55" y2="300" stroke="black" 
+          stroke-width="4" marker-end="url(#arrowhead)" />
+    </svg>  
 
    </body>
 </html>
