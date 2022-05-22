@@ -19,9 +19,9 @@ public class Main extends Application {
 	 public void start(Stage primaryStage) throws Exception {
 	     WebView webView = new WebView();
 	     WebEngine webEngine = webView.getEngine();
-	     //webEngine.load( getClass().getResource(Constants.HTML_FILENAME).toString() );
 	     webEngine.loadContent(LogFilesReader.readHTMLFile_andBeautify());
 	     Scene scene = new Scene(webView,600,600);
+	     //scene.getStylesheets().add(getClass().getResource("view.css").toExternalForm());
 	     primaryStage.setScene(scene);
 	     primaryStage.setTitle("Thread Logger Viewer");
 	     primaryStage.show();

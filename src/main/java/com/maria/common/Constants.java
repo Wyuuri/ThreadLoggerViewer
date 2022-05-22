@@ -2,7 +2,7 @@ package main.java.com.maria.common;
 
 public class Constants {
 
-	public final static String UI_PATH = "D:\\GitHub\\ThreadLoggerViewer\\src\\main\\java\\com\\maria\\view\\";
+	public final static String UI_PATH = "D:\\GitHub\\ThreadLoggerViewer\\src\\application\\";
 	public final static String PATH = "D:\\trace\\";
 	public final static String PID = "pid";
 	public final static String SPAWN = "spawn";

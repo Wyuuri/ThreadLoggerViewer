@@ -1,0 +1,13 @@
+h1 {color: blue;}
+h2 {color: #ff0000;}
+
+body {
+    color:#000; 
+    font-family:times; 
+    margin: 4px; }
+
+pre {
+    font : 10px monaco; 
+    color : black; 
+    background-color : #dba3c2; 
+}
