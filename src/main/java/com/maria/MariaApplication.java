@@ -18,7 +18,7 @@ public class MariaApplication {
         //log.getAllProcessesNumbers(Constants.PATH);
         log.getSendMsg();
         
-        UserInterface.createWindow();
+        UserInterface1.createWindow();
         log.readHTMLFile_andBeautify();
     }*/
 }

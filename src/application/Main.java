@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import main.java.com.maria.common.Constants;
 import main.java.com.maria.service.LogFilesReader;
+import main.java.com.maria.view.UserInterface;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.event.ActionEvent;
@@ -15,11 +16,20 @@ import javafx.scene.web.WebView;
 
 
 public class Main extends Application {
+	
+	private static final String startFile = Constants.PATH + "trace_result.log";
+	
 	 @Override
 	 public void start(Stage primaryStage) throws Exception {
+		 // Backend
+		 LogFilesReader log = new LogFilesReader();
+	     String firstProcess = String.valueOf(log.getLaunchProcess(startFile));
+	     log.readLineByLine(Constants.PATH + "trace_" + firstProcess + ".log");
+		 
+		 // Frontend
 	     WebView webView = new WebView();
 	     WebEngine webEngine = webView.getEngine();
-	     webEngine.loadContent(LogFilesReader.readHTMLFile_andBeautify());
+	     webEngine.loadContent(UserInterface.readHTMLFile_andBeautify());
 	     Scene scene = new Scene(webView,600,600);
 	     //scene.getStylesheets().add(getClass().getResource("view.css").toExternalForm());
 	     primaryStage.setScene(scene);

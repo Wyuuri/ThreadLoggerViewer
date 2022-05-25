@@ -16,13 +16,13 @@ import main.java.com.maria.common.Constants;
 public class LogFilesReader {
 	
 	//index 0 --- {send,0}. --- process number String
-	static Map<Integer,String> sendMsg = new HashMap<>();
+	private static Map<Integer,String> sendMsg = new HashMap<>();
 	
 	//index 0 --- {deliver,0}.
-	static Map<Integer,String> deliverMsg = new HashMap<>();
+	private static Map<Integer,String> deliverMsg = new HashMap<>();
 	
 	//index 0 --- {receive,0}.
-	static Map<Integer,String> receiveMsg = new HashMap<>();
+	private static Map<Integer,String> receiveMsg = new HashMap<>();
 	
 	public LogFilesReader( ) { }
 	
@@ -180,7 +180,7 @@ public class LogFilesReader {
 		}
 	}
 
-	private static List<String> getAllProcessesNumbers(String path) {
+	public static List<String> getAllProcessesNumbers(String path) {
 		
 		//Creating a File object for directory
 	      File directoryPath = new File(path);
@@ -205,62 +205,32 @@ public class LogFilesReader {
 	      return pids;
 	}
 	
-	public static String readHTMLFile_andBeautify() {
-		String res = "";
-		
-		try {  
-			File file=new File(Constants.UI_PATH + Constants.HTML_FILENAME);    //creates a new file instance  
-			FileReader fr=new FileReader(file);   //reads the file  
-			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
-			StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
-		
-			List<String> pids = getAllProcessesNumbers(Constants.PATH);
-			
-			String processes = "";
-			String line;
-			while((line=br.readLine())!=null) {
-				if(line.trim().equals("toBeChanged")) {
-					for(String pid: pids) {
-						processes += "<div class=\"process-style\">" + pid + "</div>";
-					}
-					sb.append(processes);
-					continue;
-				}
-				sb.append(line);
-			}  
-			fr.close();
-			res = sb.toString();
-			System.out.println(res);  
-		}  
-		catch(IOException e) {  
-			e.printStackTrace();
-		}
-		
-		return res;
-	}
 	
-	public void getSendMsg( ) {
+	public static Map<Integer,String> getSendMsg( ) {
 		for (Integer name: sendMsg.keySet()) {
 		    String key = name.toString();
 		    String value = sendMsg.get(name).toString();
 		    System.out.println(key + " " + value);
 		}
+		return sendMsg;
 	}
 	
-	public void getDeliverMsg( ) {
+	public static Map<Integer,String> getDeliverMsg( ) {
 		for (Integer name: deliverMsg.keySet()) {
 		    String key = name.toString();
 		    String value = deliverMsg.get(name).toString();
 		    System.out.println(key + " " + value);
 		}
+		return deliverMsg;
 	}
 	
-	public void getReceiveMsg( ) {
+	public static Map<Integer,String> getReceiveMsg( ) {
 		for (Integer name: receiveMsg.keySet()) {
 		    String key = name.toString();
 		    String value = receiveMsg.get(name).toString();
 		    System.out.println("" + key + " " + value);
 		}
+		return receiveMsg;
 	}
 
 }
