@@ -24,9 +24,8 @@ public class Main extends Application {
 		 // Backend
 		 LogFilesReader log = new LogFilesReader();
 	     String firstProcess = String.valueOf(log.getLaunchProcess(startFile));
-	     log.readLineByLine(Constants.PATH + "trace_" + firstProcess + ".log");
-		 
-		 // Frontend
+	     LogFilesReader.readLineByLine(Constants.PATH + "trace_" + firstProcess + ".log");
+	     // Frontend
 	     WebView webView = new WebView();
 	     WebEngine webEngine = webView.getEngine();
 	     webEngine.loadContent(UserInterface.readHTMLFile_andBeautify());

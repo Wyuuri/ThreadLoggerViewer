@@ -15,6 +15,11 @@ import main.java.com.maria.common.Constants;
 
 public class LogFilesReader {
 	
+	public static int lastMessageNumber = -1;
+	
+	// processNumber --- list of messages
+	private static Map<String,List<String>> sortedPoints = new HashMap<>();
+	
 	//index 0 --- {send,0}. --- process number String
 	private static Map<Integer,String> sendMsg = new HashMap<>();
 	
@@ -121,20 +126,22 @@ public class LogFilesReader {
 	}
 	
 	public static void readLineByLine(String path) {
+		
+		String processNumber = getProcessNumber(path);
+		List<String> myMessages = new ArrayList<>();
+		
 		try {  
 			File file=new File(path);    //creates a new file instance  
 			FileReader fr=new FileReader(file);   //reads the file  
 			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
 			StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
 			
-			String processNumber = getProcessNumber(path);
 			Pattern pattern;
 			Matcher matcher;
 			
 			String line;
 			int number;
 			String filepath;
-			String spawnedProc;
 			while((line=br.readLine())!=null) {
 				
 				if(isSend(line)) {
@@ -144,6 +151,9 @@ public class LogFilesReader {
 			        
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					sendMsg.put(number, processNumber);
+					myMessages.add("send "+ number);
+					
+					lastMessageNumber = (number > lastMessageNumber) ? number : lastMessageNumber;
 				}
 				else if(isDeliver(line)) {
 					pattern = Pattern.compile(Constants.DELIVER_REGEX);
@@ -152,6 +162,9 @@ public class LogFilesReader {
 			        
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					deliverMsg.put(number, processNumber);
+					myMessages.add("deliver "+ number);
+					
+					lastMessageNumber = (number > lastMessageNumber) ? number : lastMessageNumber;
 				}
 				else if(isReceive(line)) {
 					pattern = Pattern.compile(Constants.RECEIVE_REGEX);
@@ -160,6 +173,9 @@ public class LogFilesReader {
 			        
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					receiveMsg.put(number, processNumber);
+					myMessages.add("receive "+ number);
+					
+					lastMessageNumber = (number > lastMessageNumber) ? number : lastMessageNumber;
 				}
 				else if(isSpawn(line)) {
 					filepath = Constants.PATH + Constants.FILENAME_PREFIX 
@@ -178,6 +194,8 @@ public class LogFilesReader {
 		catch(IOException e) {  
 			e.printStackTrace();
 		}
+		
+		sortedPoints.put(processNumber, myMessages);
 	}
 
 	public static List<String> getAllProcessesNumbers(String path) {
@@ -205,6 +223,10 @@ public class LogFilesReader {
 	      return pids;
 	}
 	
+	public static int numberOfProcesses() {
+		List<String> processes = getAllProcessesNumbers(Constants.PATH);
+		return processes.size();
+	}
 	
 	public static Map<Integer,String> getSendMsg( ) {
 		for (Integer name: sendMsg.keySet()) {
@@ -233,4 +255,12 @@ public class LogFilesReader {
 		return receiveMsg;
 	}
 
+	public static Map<String, List<String>> getSortedPoints() {
+		/*for (String process: sortedPoints.keySet()) {
+		    String key = process.toString();
+		    List<String> value = sortedPoints.get(process);
+		    System.out.println("Process " + key + " and my messages:\n" + value + "\n");
+		}*/
+		return sortedPoints;
+	}
 }

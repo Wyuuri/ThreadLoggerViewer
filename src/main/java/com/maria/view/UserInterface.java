@@ -41,7 +41,7 @@ public class UserInterface {
 					sb.append(historyLines);
 					continue;
 				} else if(line.trim().equals("toBeChanged3")) {
-					msgLines = drawMsg();
+					msgLines = drawMsg(pids);
 					sb.append(msgLines);
 					continue;
 				}
@@ -49,7 +49,7 @@ public class UserInterface {
 			}  
 			fr.close();
 			res = sb.toString();
-			System.out.println(res);  
+			//System.out.println(res);  
 		}  
 		catch(IOException e) {  
 			e.printStackTrace();
@@ -76,26 +76,47 @@ public class UserInterface {
 		return res;
 	}
 	
-	public static String drawMsg() {
-		String res = "<!-- ARROW TO THE RIGHT -->\r\n"
+	public static String drawMsg(List<String> pids) {
+		String arrowRight = "<!-- ARROW TO THE RIGHT -->\r\n"
 				+ "        <line class=\"msg\" x1=\"30\" y1=\"50\" x2=\"120\" y2=\"50\" \r\n"
-				+ "            marker-end=\"url(#arrowhead)\" />\r\n"
-				+ "        \r\n"
-				+ "        <!-- SELF ARROW -->\r\n"
+				+ "            marker-end=\"url(#arrowhead)\" />\r\n";
+		
+		String arrowSelf = "<!-- SELF ARROW -->\r\n"
 				+ "        <line class=\"msg\" x1=\"30\" y1=\"90\" x2=\"60\" y2=\"90\"/>\r\n"
 				+ "        <line class=\"msg\" x1=\"60\" y1=\"90\" x2=\"60\" y2=\"110\"/>\r\n"
 				+ "        <line class=\"msg\" x1=\"60\" y1=\"110\" x2=\"40\" y2=\"110\" \r\n"
-				+ "            marker-end=\"url(#arrowhead)\" />\r\n"
-				+ "        \r\n"
-				+ "    \r\n"
-				+ "        <!-- ARROW TO THE LEFT -->\r\n"
+				+ "            marker-end=\"url(#arrowhead)\" />\r\n";
+		
+		String arrowLeft = "<!-- ARROW TO THE LEFT -->\r\n"
 				+ "        <line class=\"msg\" x1=\"130\" y1=\"150\" x2=\"40\" y2=\"150\" \r\n"
 				+ "            marker-end=\"url(#arrowhead)\" />";
 		
-		Map<Integer,String> sendMsg = LogFilesReader.getSendMsg();
-		String processNumber = sendMsg.get(0).toString(); // 88
+		String res = "";
 		
-		System.out.println(processNumber);
+		int lastMsg = LogFilesReader.lastMessageNumber;
+		for(int i = 0; i < lastMsg; i++) {
+			
+		}
+		
+		int xText = 45;
+		int x1 = 30;
+		int x2 = 120;
+		int y1 = 50;
+		int y2 = 50;
+		
+		Map<String, List<String>> sortedPoints = LogFilesReader.getSortedPoints();
+		for (String process: sortedPoints.keySet()) {
+		    List<String> messages = sortedPoints.get(process);
+		    
+		    for (String msg: messages) {
+		    	res += "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x1 +"\" cy=\"50\" r=\"5\"></circle>"
+		    		+ "<text font-size=\"10\" x=\""+ xText +"\" y=\"40\" text-anchor=\"middle\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
+		    }
+		    System.out.println("Process " + process + " and my messages:\n" + messages + "\n");
+		    x1 += 120; x2 += 120; xText += 120;
+		}
+		
+		res += arrowRight + arrowSelf + arrowLeft;
 		return res;
 	}
 }
