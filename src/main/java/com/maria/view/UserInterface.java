@@ -63,7 +63,7 @@ public class UserInterface {
 		int rectX = 10;
 		int y1 = 0;
 		int y2 = 30; // when process history starts, increase 30 by 30
-		int height = 300; // changeable
+		int height = 300; // same height that the SVG wrapper
 		
 		String res = "";
 		for(int i = 0; i < size; i++) {
@@ -98,19 +98,26 @@ public class UserInterface {
 			
 		}
 		
-		int xText = 45;
+		int xText = 35;
+		int yText;
 		int x1 = 30;
 		int x2 = 120;
-		int y1 = 50;
+		int y1;
 		int y2 = 50;
 		
 		Map<String, List<String>> sortedPoints = LogFilesReader.getSortedPoints();
 		for (String process: sortedPoints.keySet()) {
 		    List<String> messages = sortedPoints.get(process);
 		    
+		    yText = 40;
+		    y1 = 50;
+		    
 		    for (String msg: messages) {
-		    	res += "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x1 +"\" cy=\"50\" r=\"5\"></circle>"
-		    		+ "<text font-size=\"10\" x=\""+ xText +"\" y=\"40\" text-anchor=\"middle\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
+		    	res += "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x1 +"\" cy=\""+ y1 +"\" r=\"5\"></circle>"
+		    		+ "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
+		    
+		    	yText += 30;
+		    	y1 += 30; 
 		    }
 		    System.out.println("Process " + process + " and my messages:\n" + messages + "\n");
 		    x1 += 120; x2 += 120; xText += 120;

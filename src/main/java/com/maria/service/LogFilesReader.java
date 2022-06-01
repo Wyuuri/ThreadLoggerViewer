@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,16 +18,16 @@ public class LogFilesReader {
 	
 	public static int lastMessageNumber = -1;
 	
-	// processNumber --- list of messages
-	private static Map<String,List<String>> sortedPoints = new HashMap<>();
+	// process number String --- list of messages (natural order keys)
+	private static Map<String,List<String>> sortedPoints = new TreeMap<>();
 	
-	//index 0 --- {send,0}. --- process number String
+	// send msg number --- process number String
 	private static Map<Integer,String> sendMsg = new HashMap<>();
 	
-	//index 0 --- {deliver,0}.
+	// deliver msg number --- process number String
 	private static Map<Integer,String> deliverMsg = new HashMap<>();
 	
-	//index 0 --- {receive,0}.
+	// receive msg number --- process number String
 	private static Map<Integer,String> receiveMsg = new HashMap<>();
 	
 	public LogFilesReader( ) { }
