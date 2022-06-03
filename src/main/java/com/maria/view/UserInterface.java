@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import main.java.com.maria.common.Constants;
 import main.java.com.maria.service.LogFilesReader;
@@ -13,6 +15,10 @@ import main.java.com.maria.service.LogFilesReader;
 public class UserInterface {
 	
 	private final static String htmlFilepath = Constants.UI_PATH + Constants.HTML_FILENAME;
+	private final static Map<Integer,String> sendMsg = LogFilesReader.getSendMsg();
+	private final static Map<Integer,String> deliverMsg = LogFilesReader.getDeliverMsg();
+	private final static Map<Integer,String> receiveMsg = LogFilesReader.getReceiveMsg();
+	private final static Map<String, Integer> xValues =  LogFilesReader.Xvalues();
 	
 	public static String readHTMLFile_andBeautify() {
 		String res = "";
@@ -77,20 +83,6 @@ public class UserInterface {
 	}
 	
 	public static String drawMsg(List<String> pids) {
-		String arrowRight = "<!-- ARROW TO THE RIGHT -->\r\n"
-				+ "        <line class=\"msg\" x1=\"30\" y1=\"50\" x2=\"120\" y2=\"50\" \r\n"
-				+ "            marker-end=\"url(#arrowhead)\" />\r\n";
-		
-		String arrowSelf = "<!-- SELF ARROW -->\r\n"
-				+ "        <line class=\"msg\" x1=\"30\" y1=\"90\" x2=\"60\" y2=\"90\"/>\r\n"
-				+ "        <line class=\"msg\" x1=\"60\" y1=\"90\" x2=\"60\" y2=\"110\"/>\r\n"
-				+ "        <line class=\"msg\" x1=\"60\" y1=\"110\" x2=\"40\" y2=\"110\" \r\n"
-				+ "            marker-end=\"url(#arrowhead)\" />\r\n";
-		
-		String arrowLeft = "<!-- ARROW TO THE LEFT -->\r\n"
-				+ "        <line class=\"msg\" x1=\"130\" y1=\"150\" x2=\"40\" y2=\"150\" \r\n"
-				+ "            marker-end=\"url(#arrowhead)\" />";
-		
 		String res = "";
 		
 		int lastMsg = LogFilesReader.lastMessageNumber;
@@ -100,10 +92,11 @@ public class UserInterface {
 		
 		int xText = 35;
 		int yText;
-		int x1 = 30;
+		int x1; // = Constants.STARTING_X_COORDINATE;
 		int x2 = 120;
 		int y1;
 		int y2 = 50;
+		int y = 50; // += 30
 		
 		Map<String, List<String>> sortedPoints = LogFilesReader.getSortedPoints();
 		for (String process: sortedPoints.keySet()) {
@@ -112,7 +105,15 @@ public class UserInterface {
 		    yText = 40;
 		    y1 = 50;
 		    
+		    x1 = xValues.get(process);
 		    for (String msg: messages) {
+		    	// TODO: Trying to make circles correspond to their arrows Y coordinate
+		    	switch (msg) {
+		    		case "send": 	x2 = xValues.get(sendMsg.get(getMsgNumber(msg))); break;
+		    		case "deliver": x2 = xValues.get(deliverMsg.get(getMsgNumber(msg))); break;
+		    		case "receive": x2 = xValues.get(receiveMsg.get(getMsgNumber(msg))); break;
+		    	}
+		    	
 		    	res += "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x1 +"\" cy=\""+ y1 +"\" r=\"5\"></circle>"
 		    		+ "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
 		    
@@ -120,10 +121,44 @@ public class UserInterface {
 		    	y1 += 30; 
 		    }
 		    System.out.println("Process " + process + " and my messages:\n" + messages + "\n");
-		    x1 += 120; x2 += 120; xText += 120;
+		    //x1 += 120; 
+		    x2 += 120; xText += 120;
 		}
-		
-		res += arrowRight + arrowSelf + arrowLeft;
+		res += drawArrows(pids);
 		return res;
+	}
+	
+	public static String drawArrows(List<String> pids) {
+		String arrowRight = "<line class=\"msg\" x1=\"30\" y1=\"50\" x2=\"120\" y2=\"50\" \r\n"
+				+ "            marker-end=\"url(#arrowhead)\" />\r\n";
+		
+		String arrowLeft = "<line class=\"msg\" x1=\"130\" y1=\"150\" x2=\"40\" y2=\"150\" \r\n"
+				+ "            marker-end=\"url(#arrowhead)\" />";
+		
+		String res = "";
+		String processNumber;
+		int x1, x2, y = 50;
+		for(int msgNumber = 0; msgNumber < LogFilesReader.lastMessageNumber; msgNumber++) {
+			processNumber = sendMsg.get(msgNumber);
+			x1 = xValues.get(processNumber);
+			x2 = xValues.get(deliverMsg.get(msgNumber));
+			res += "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y +"\" x2=\""+ x2 +"\" y2=\""+ y +"\" marker-end=\"url(#arrowhead)\" />";
+			y += 30;
+		}
+		return res;
+	}
+
+	private static Integer getMsgNumber(String message) {
+		Pattern pattern = Pattern.compile("(\\d+)");
+        Matcher matcher = pattern.matcher(message);
+        matcher.find();
+        return Integer.valueOf(message.substring(matcher.start(), matcher.end()));
+	}
+	
+	private static String getMsgString(String message) {
+		Pattern pattern = Pattern.compile("(\\S+)");
+        Matcher matcher = pattern.matcher(message);
+        matcher.find();
+        return message.substring(matcher.start(), matcher.end());
 	}
 }

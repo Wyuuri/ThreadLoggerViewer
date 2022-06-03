@@ -30,6 +30,9 @@ public class LogFilesReader {
 	// receive msg number --- process number String
 	private static Map<Integer,String> receiveMsg = new HashMap<>();
 	
+	// process number String --- X coordinate
+	private static Map<String, Integer> xValues = new TreeMap<>();
+	
 	public LogFilesReader( ) { }
 	
 	public int getLaunchProcess(String path) {
@@ -223,6 +226,21 @@ public class LogFilesReader {
 	      
 	      return pids;
 	}
+	
+	public static Map<String, Integer> Xvalues() {
+		List<String> pids = getAllProcessesNumbers(Constants.PATH);
+		int x = Constants.STARTING_X_COORDINATE;
+		for(String pid : pids) {
+			xValues.put(pid, x);
+			x += Constants.GAP_X_COORDINATE;
+		}
+		/*for (String pid: xValues.keySet()) {
+		    String value = xValues.get(pid).toString();
+		    System.out.println(pid + " " + value);
+		}*/
+		return xValues;
+	}
+	
 	
 	public static int numberOfProcesses() {
 		List<String> processes = getAllProcessesNumbers(Constants.PATH);
