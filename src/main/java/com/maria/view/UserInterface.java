@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -19,6 +21,8 @@ public class UserInterface {
 	private final static Map<Integer,String> deliverMsg = LogFilesReader.getDeliverMsg();
 	private final static Map<Integer,String> receiveMsg = LogFilesReader.getReceiveMsg();
 	private final static Map<String, Integer> xValues =  LogFilesReader.Xvalues();
+	private final static Map<String,List<String>> sortedPoints = LogFilesReader.getSortedPoints();
+	private static Map<String, List<Integer>> takenYvalues = new HashMap<>();
 	
 	public static String readHTMLFile_andBeautify() {
 		String res = "";
@@ -34,6 +38,7 @@ public class UserInterface {
 			String processes = "";
 			String historyLines = "";
 			String msgLines = "";
+			String receivePoints = "";
 			String line;
 			while((line=br.readLine())!=null) {
 				if(line.trim().equals("toBeChanged")) {
@@ -47,7 +52,9 @@ public class UserInterface {
 					sb.append(historyLines);
 					continue;
 				} else if(line.trim().equals("toBeChanged3")) {
-					msgLines = drawMsg(pids);
+					receivePoints = drawReceivePoints();
+					sb.append(receivePoints);
+					msgLines = drawArrows(pids);
 					sb.append(msgLines);
 					continue;
 				}
@@ -69,7 +76,7 @@ public class UserInterface {
 		int rectX = 10;
 		int y1 = 0;
 		int y2 = 30; // when process history starts, increase 30 by 30
-		int height = 300; // same height that the SVG wrapper
+		String height = "100%"; // same height that the SVG wrapper
 		
 		String res = "";
 		for(int i = 0; i < size; i++) {
@@ -82,49 +89,31 @@ public class UserInterface {
 		return res;
 	}
 	
-	public static String drawMsg(List<String> pids) {
+	public static String drawReceivePoints() {
 		String res = "";
-		
-		int lastMsg = LogFilesReader.lastMessageNumber;
-		for(int i = 0; i < lastMsg; i++) {
-			
+		Integer yTimes = 0;
+		String receiverProcess;
+		int x1, y1, xText, yText;
+		for(String process : sortedPoints.keySet()) {
+			for(String msg : sortedPoints.get(process)) {
+				if(msg.contains("receive")) {
+					yText = Constants.STARTING_Y_TEXT_COORDINATE + + yTimes * Constants.GAP_Y_COORDINATE;
+					y1 = Constants.STARTING_Y_COORDINATE + yTimes * Constants.GAP_Y_COORDINATE;
+					List<Integer> yReceive = new ArrayList<>();
+					yReceive.add(y1);
+					takenYvalues.put(process, yReceive);
+					
+					receiverProcess = deliverMsg.get(getMsgNumber(msg));
+					x1 = xValues.get(receiverProcess);
+					xText = x1 + 5;
+					res += "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x1 +"\" cy=\""+ y1 +"\" r=\"5\"></circle>"
+						+ "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
+
+				}
+				yTimes++;
+			}
 		}
 		
-		int xText = 35;
-		int yText;
-		int x1; // = Constants.STARTING_X_COORDINATE;
-		int x2 = 120;
-		int y1;
-		int y2 = 50;
-		int y = 50; // += 30
-		
-		Map<String, List<String>> sortedPoints = LogFilesReader.getSortedPoints();
-		for (String process: sortedPoints.keySet()) {
-		    List<String> messages = sortedPoints.get(process);
-		    
-		    yText = 40;
-		    y1 = 50;
-		    
-		    x1 = xValues.get(process);
-		    for (String msg: messages) {
-		    	// TODO: Trying to make circles correspond to their arrows Y coordinate
-		    	switch (msg) {
-		    		case "send": 	x2 = xValues.get(sendMsg.get(getMsgNumber(msg))); break;
-		    		case "deliver": x2 = xValues.get(deliverMsg.get(getMsgNumber(msg))); break;
-		    		case "receive": x2 = xValues.get(receiveMsg.get(getMsgNumber(msg))); break;
-		    	}
-		    	
-		    	res += "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x1 +"\" cy=\""+ y1 +"\" r=\"5\"></circle>"
-		    		+ "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
-		    
-		    	yText += 30;
-		    	y1 += 30; 
-		    }
-		    System.out.println("Process " + process + " and my messages:\n" + messages + "\n");
-		    //x1 += 120; 
-		    x2 += 120; xText += 120;
-		}
-		res += drawArrows(pids);
 		return res;
 	}
 	
@@ -137,28 +126,63 @@ public class UserInterface {
 		
 		String res = "";
 		String processNumber;
-		int x1, x2, y = 50;
+		String receiverProcess;
+		int exp;
+		int x1, x2, y1 = 50, y2 = 50;
+		int xText, yText = Constants.STARTING_Y_TEXT_COORDINATE;
 		for(int msgNumber = 0; msgNumber < LogFilesReader.lastMessageNumber; msgNumber++) {
 			processNumber = sendMsg.get(msgNumber);
+			receiverProcess = deliverMsg.get(msgNumber);
+			exp = processNumber.compareTo(receiverProcess);
 			x1 = xValues.get(processNumber);
-			x2 = xValues.get(deliverMsg.get(msgNumber));
-			res += "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y +"\" x2=\""+ x2 +"\" y2=\""+ y +"\" marker-end=\"url(#arrowhead)\" />";
-			y += 30;
+			if(exp < 0) { x2 = xValues.get(receiverProcess) - 30; }
+			else { x2 = xValues.get(receiverProcess) + 10; }
+			
+			res += "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
+			
+			xText = x1 + 5;
+			res += drawMsg(x1, y1, xText, yText, "send "+msgNumber);
+			
+			xText = x2 + 5;
+			res += drawMsg(x2, y2, xText, yText, "deliver "+msgNumber);
+			
+			y1 += 30;
+			y2 += 30;
+			yText += 30;
+			
+			if(!takenYvalues.containsKey(processNumber)) {
+				List<Integer> y = new ArrayList<>();
+				y.add(y1);
+				takenYvalues.put(processNumber, y);
+			} else {
+				takenYvalues.get(processNumber).add(y1);
+			}
+			
+			if(!takenYvalues.containsKey(receiverProcess)) {
+				List<Integer> y = new ArrayList<>();
+				y.add(y2);
+				takenYvalues.put(receiverProcess, y);
+			} else {
+				takenYvalues.get(receiverProcess).add(y2);
+			}
 		}
 		return res;
 	}
 
+	public static String drawMsg(int x1, int y1, int xText, int yText, String msg) {
+		String res = "";
+		
+		res = "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x1 +"\" cy=\""+ y1 +"\" r=\"2\"></circle>"
+		    + "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
+
+		return res;
+	}
+	
 	private static Integer getMsgNumber(String message) {
 		Pattern pattern = Pattern.compile("(\\d+)");
         Matcher matcher = pattern.matcher(message);
         matcher.find();
-        return Integer.valueOf(message.substring(matcher.start(), matcher.end()));
-	}
-	
-	private static String getMsgString(String message) {
-		Pattern pattern = Pattern.compile("(\\S+)");
-        Matcher matcher = pattern.matcher(message);
-        matcher.find();
-        return message.substring(matcher.start(), matcher.end());
+        String msgNumber = message.substring(matcher.start(), matcher.end());
+        return Integer.valueOf(msgNumber);
 	}
 }

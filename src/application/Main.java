@@ -29,7 +29,7 @@ public class Main extends Application {
 	     WebView webView = new WebView();
 	     WebEngine webEngine = webView.getEngine();
 	     webEngine.loadContent(UserInterface.readHTMLFile_andBeautify());
-	     Scene scene = new Scene(webView,600,600);
+	     Scene scene = new Scene(webView,600,800); //TODO: Change height
 	     //scene.getStylesheets().add(getClass().getResource("view.css").toExternalForm());
 	     primaryStage.setScene(scene);
 	     primaryStage.setTitle("Thread Logger Viewer");
