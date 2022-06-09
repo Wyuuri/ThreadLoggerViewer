@@ -23,6 +23,8 @@ public class UserInterface {
 	private final static Map<String, Integer> xValues =  LogFilesReader.Xvalues();
 	private final static Map<String,List<String>> sortedPoints = LogFilesReader.getSortedPoints();
 	private static Map<String, List<Integer>> takenYvalues = new HashMap<>();
+	private static Map<String, String> receivePreviousMsg = new HashMap<>();
+	private static Map<String, String> receiveNextMsg = new HashMap<>();
 	
 	public static String readHTMLFile_andBeautify() {
 		String res = "";
@@ -38,7 +40,6 @@ public class UserInterface {
 			String processes = "";
 			String historyLines = "";
 			String msgLines = "";
-			String receivePoints = "";
 			String line;
 			while((line=br.readLine())!=null) {
 				if(line.trim().equals("toBeChanged")) {
@@ -52,8 +53,6 @@ public class UserInterface {
 					sb.append(historyLines);
 					continue;
 				} else if(line.trim().equals("toBeChanged3")) {
-					receivePoints = drawReceivePoints();
-					sb.append(receivePoints);
 					msgLines = drawArrows(pids);
 					sb.append(msgLines);
 					continue;
@@ -89,47 +88,52 @@ public class UserInterface {
 		return res;
 	}
 	
-	public static String drawReceivePoints() {
-		String res = "";
-		Integer yTimes = 0;
-		String receiverProcess;
-		int x1, y1, xText, yText;
+	private static Map<String, String> fillMsgList() {
+		boolean isNext = false;
+		String previousMsg = "";
+		String receiveMsg = "";
 		for(String process : sortedPoints.keySet()) {
 			for(String msg : sortedPoints.get(process)) {
-				if(msg.contains("receive")) {
-					yText = Constants.STARTING_Y_TEXT_COORDINATE + + yTimes * Constants.GAP_Y_COORDINATE;
-					y1 = Constants.STARTING_Y_COORDINATE + yTimes * Constants.GAP_Y_COORDINATE;
-					List<Integer> yReceive = new ArrayList<>();
-					yReceive.add(y1);
-					takenYvalues.put(process, yReceive);
-					
-					receiverProcess = deliverMsg.get(getMsgNumber(msg));
-					x1 = xValues.get(receiverProcess);
-					xText = x1 + 5;
-					res += "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x1 +"\" cy=\""+ y1 +"\" r=\"5\"></circle>"
-						+ "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
-
+				if(isNext) {
+					receiveNextMsg.put(msg, receiveMsg);
+					isNext = false;
 				}
-				yTimes++;
+				if(msg.contains("receive")) {
+					receiveMsg = msg;
+					receivePreviousMsg.put(previousMsg, msg);
+					isNext = true;
+				}
+				previousMsg = msg;
 			}
 		}
-		
-		return res;
+		printMsgList();
+		return receivePreviousMsg;
+	}
+	
+	public static void printMsgList( ) {
+		for (String prevMsg: receivePreviousMsg.keySet()) {
+		    String msg = receivePreviousMsg.get(prevMsg).toString();
+		    System.out.println(prevMsg + " " + msg);
+		}
+	}
+	
+	public static String drawReceivePoint(int x1, int y1, int xText, int  yText, String msg) {
+		return "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x1 +"\" cy=\""+ y1 +"\" r=\"5\"></circle>"
+			+ "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
 	}
 	
 	public static String drawArrows(List<String> pids) {
-		String arrowRight = "<line class=\"msg\" x1=\"30\" y1=\"50\" x2=\"120\" y2=\"50\" \r\n"
-				+ "            marker-end=\"url(#arrowhead)\" />\r\n";
-		
-		String arrowLeft = "<line class=\"msg\" x1=\"130\" y1=\"150\" x2=\"40\" y2=\"150\" \r\n"
-				+ "            marker-end=\"url(#arrowhead)\" />";
+		fillMsgList();
 		
 		String res = "";
 		String processNumber;
 		String receiverProcess;
+		String message, receiveMessage;
+		boolean isNext = false;
 		int exp;
-		int x1, x2, y1 = 50, y2 = 50;
+		int x1, x2, y1 = Constants.STARTING_Y_COORDINATE, y2 = Constants.STARTING_Y_COORDINATE;
 		int xText, yText = Constants.STARTING_Y_TEXT_COORDINATE;
+		int auxY1, auxY2, auxYText;
 		for(int msgNumber = 0; msgNumber < LogFilesReader.lastMessageNumber; msgNumber++) {
 			processNumber = sendMsg.get(msgNumber);
 			receiverProcess = deliverMsg.get(msgNumber);
@@ -141,30 +145,44 @@ public class UserInterface {
 			res += "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
 			
 			xText = x1 + 5;
-			res += drawMsg(x1, y1, xText, yText, "send "+msgNumber);
+			message = "send "+msgNumber;
+			res += drawMsg(x1, y1, xText, yText, message);
+			if(receivePreviousMsg.containsKey(message)) {
+				auxY1 = y1 + 30;
+				auxYText = yText + 30;
+				receiveMessage = receivePreviousMsg.get(message);
+				res += drawReceivePoint(x1, auxY1, xText, auxYText, receiveMessage);
+				//TODO
+				res += drawReceivePoint(x1, auxY1+30, xText, auxYText+30, receivePreviousMsg.get(receiveMessage));
+				isNext = true;
+			}
+			if(isNext) {
+				/*y1 += 30;
+				yText += 30;*/
+				isNext = false;
+			}
 			
 			xText = x2 + 5;
-			res += drawMsg(x2, y2, xText, yText, "deliver "+msgNumber);
+			message = "deliver "+msgNumber;
+			res += drawMsg(x2, y2, xText, yText, message);
+			if(receivePreviousMsg.containsKey(message)) {
+				auxY2 = y2 + 30;
+				auxYText = yText + 30;
+				receiveMessage = receivePreviousMsg.get(message);
+				res += drawReceivePoint(x2, auxY2, xText, auxYText, receiveMessage);
+				//TODO
+				res += drawReceivePoint(x1, auxY2+30, xText, auxYText+30, receivePreviousMsg.get(receiveMessage));
+				isNext = true;
+			}
+			if(isNext) {
+				/*y2 += 30;
+				yText += 30;*/
+				isNext = false;
+			}
 			
 			y1 += 30;
 			y2 += 30;
 			yText += 30;
-			
-			if(!takenYvalues.containsKey(processNumber)) {
-				List<Integer> y = new ArrayList<>();
-				y.add(y1);
-				takenYvalues.put(processNumber, y);
-			} else {
-				takenYvalues.get(processNumber).add(y1);
-			}
-			
-			if(!takenYvalues.containsKey(receiverProcess)) {
-				List<Integer> y = new ArrayList<>();
-				y.add(y2);
-				takenYvalues.put(receiverProcess, y);
-			} else {
-				takenYvalues.get(receiverProcess).add(y2);
-			}
 		}
 		return res;
 	}
