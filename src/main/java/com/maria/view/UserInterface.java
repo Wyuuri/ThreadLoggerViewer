@@ -89,13 +89,14 @@ public class UserInterface {
 	}
 	
 	private static Map<String, String> fillMsgList() {
-		boolean isNext = false;
+		boolean isNext;
 		String previousMsg = "";
 		String receiveMsg = "";
 		for(String process : sortedPoints.keySet()) {
+			isNext = false;
 			for(String msg : sortedPoints.get(process)) {
 				if(isNext) {
-					receiveNextMsg.put(msg, receiveMsg);
+					receiveNextMsg.put(receiveMsg, msg);
 					isNext = false;
 				}
 				if(msg.contains("receive")) {
@@ -111,9 +112,16 @@ public class UserInterface {
 	}
 	
 	public static void printMsgList( ) {
+		System.out.println("ReceivePreviousMsg:");
 		for (String prevMsg: receivePreviousMsg.keySet()) {
 		    String msg = receivePreviousMsg.get(prevMsg).toString();
 		    System.out.println(prevMsg + " " + msg);
+		}
+		System.out.println();
+		System.out.println("ReceiveNextMsg:");
+		for (String nextMsg: receiveNextMsg.keySet()) {
+		    String msg = receiveNextMsg.get(nextMsg).toString();
+		    System.out.println(nextMsg + " " + msg);
 		}
 	}
 	
@@ -129,60 +137,65 @@ public class UserInterface {
 		String processNumber;
 		String receiverProcess;
 		String message, receiveMessage;
-		boolean isNext = false;
 		int exp;
 		int x1, x2, y1 = Constants.STARTING_Y_COORDINATE, y2 = Constants.STARTING_Y_COORDINATE;
-		int xText, yText = Constants.STARTING_Y_TEXT_COORDINATE;
-		int auxY1, auxY2, auxYText;
+		int xText, y1Text = Constants.STARTING_Y_TEXT_COORDINATE, y2Text = Constants.STARTING_Y_TEXT_COORDINATE;
+		int auxY1, auxY1Text, auxY2, auxY2Text;
+		
 		for(int msgNumber = 0; msgNumber < LogFilesReader.lastMessageNumber; msgNumber++) {
 			processNumber = sendMsg.get(msgNumber);
 			receiverProcess = deliverMsg.get(msgNumber);
 			exp = processNumber.compareTo(receiverProcess);
-			x1 = xValues.get(processNumber);
+			x1 = xValues.get(processNumber);   
 			if(exp < 0) { x2 = xValues.get(receiverProcess) - 30; }
 			else { x2 = xValues.get(receiverProcess) + 10; }
-			
+		
 			res += "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
 			
-			xText = x1 + 5;
+			xText = x1 + 5; 
 			message = "send "+msgNumber;
-			res += drawMsg(x1, y1, xText, yText, message);
+			res += drawMsg(x1, y1, xText, y1Text, message);
 			if(receivePreviousMsg.containsKey(message)) {
-				auxY1 = y1 + 30;
-				auxYText = yText + 30;
+				auxY1 = y1 + Constants.GAP_Y_COORDINATE;
+				auxY1Text = y1Text + Constants.GAP_Y_COORDINATE;
 				receiveMessage = receivePreviousMsg.get(message);
-				res += drawReceivePoint(x1, auxY1, xText, auxYText, receiveMessage);
-				//TODO
-				res += drawReceivePoint(x1, auxY1+30, xText, auxYText+30, receivePreviousMsg.get(receiveMessage));
-				isNext = true;
-			}
-			if(isNext) {
-				/*y1 += 30;
-				yText += 30;*/
-				isNext = false;
+				res += drawReceivePoint(x1, auxY1, xText, auxY1Text, receiveMessage);
+				//if there's a receive msg next to another receive msg
+				if(receivePreviousMsg.containsKey(receiveMessage)) { 
+					auxY1 = y1 + Constants.GAP_Y_COORDINATE;
+					auxY1Text = y1Text + Constants.GAP_Y_COORDINATE;
+					res += drawReceivePoint(x1, auxY1, xText, auxY1Text, receivePreviousMsg.get(receiveMessage));
+				}
+				/*if(receiveNextMsg.containsKey(receiveMessage)) {
+					y1 += Constants.GAP_Y_COORDINATE;
+					y1Text += Constants.GAP_Y_COORDINATE;
+				}*/
 			}
 			
 			xText = x2 + 5;
 			message = "deliver "+msgNumber;
-			res += drawMsg(x2, y2, xText, yText, message);
+			res += drawMsg(x2, y2, xText, y1Text, message);
 			if(receivePreviousMsg.containsKey(message)) {
-				auxY2 = y2 + 30;
-				auxYText = yText + 30;
+				auxY2 = y2 + Constants.GAP_Y_COORDINATE;
+				y1Text += Constants.GAP_Y_COORDINATE;
 				receiveMessage = receivePreviousMsg.get(message);
-				res += drawReceivePoint(x2, auxY2, xText, auxYText, receiveMessage);
-				//TODO
-				res += drawReceivePoint(x1, auxY2+30, xText, auxYText+30, receivePreviousMsg.get(receiveMessage));
-				isNext = true;
-			}
-			if(isNext) {
-				/*y2 += 30;
-				yText += 30;*/
-				isNext = false;
+				res += drawReceivePoint(x2, auxY2, xText, y1Text, receiveMessage);
+				//if there's a receive msg next to another receive msg
+				if(receivePreviousMsg.containsKey(receiveMessage)) { 
+					auxY2 = y2 + Constants.GAP_Y_COORDINATE;
+					y1Text += Constants.GAP_Y_COORDINATE;
+					res += drawReceivePoint(x2, auxY2, xText, y1Text, receivePreviousMsg.get(receiveMessage));
+				}
+				/*if(receiveNextMsg.containsKey(receiveMessage)) {
+					y2 += Constants.GAP_Y_COORDINATE;
+					y2Text += Constants.GAP_Y_COORDINATE;
+				}*/
 			}
 			
-			y1 += 30;
-			y2 += 30;
-			yText += 30;
+			y1 += Constants.GAP_Y_COORDINATE;
+			y2 += Constants.GAP_Y_COORDINATE;
+			y1Text += Constants.GAP_Y_COORDINATE;
+			y2Text += Constants.GAP_Y_COORDINATE;
 		}
 		return res;
 	}
