@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +29,7 @@ public class UserInterface {
 	private static Map<String, Integer> lastY = new HashMap<>();
 	private static Map<String, Boolean> waitingProcess = new HashMap<>();
 	private static Map<String, Integer> processMsgPointer = new HashMap<>();
-	private static Map<String, List<Map<String, Integer>>> yCoordinates = new HashMap<>();
+	private static Map<String, List<Map<String, Integer>>> yCoordinates = new TreeMap<>();
 	
 	public static String readHTMLFile_andBeautify() {
 		String res = "";
