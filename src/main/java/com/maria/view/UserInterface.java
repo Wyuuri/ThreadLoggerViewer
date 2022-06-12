@@ -22,9 +22,13 @@ public class UserInterface {
 	private final static Map<Integer,String> receiveMsg = LogFilesReader.getReceiveMsg();
 	private final static Map<String, Integer> xValues =  LogFilesReader.Xvalues();
 	private final static Map<String,List<String>> sortedPoints = LogFilesReader.getSortedPoints();
-	private static Map<String, List<Integer>> takenYvalues = new HashMap<>();
 	private static Map<String, String> receivePreviousMsg = new HashMap<>();
 	private static Map<String, String> receiveNextMsg = new HashMap<>();
+	private static Map<String, Integer> currentY = new HashMap<>();
+	private static Map<String, Integer> lastY = new HashMap<>();
+	private static Map<String, Boolean> waitingProcess = new HashMap<>();
+	private static Map<String, Integer> processMsgPointer = new HashMap<>();
+	private static Map<String, List<HashMap<String, Integer>>> yCoordinates = new HashMap<>();
 	
 	public static String readHTMLFile_andBeautify() {
 		String res = "";
@@ -53,7 +57,7 @@ public class UserInterface {
 					sb.append(historyLines);
 					continue;
 				} else if(line.trim().equals("toBeChanged3")) {
-					msgLines = drawArrows(pids);
+					msgLines = drawArrows();
 					sb.append(msgLines);
 					continue;
 				}
@@ -82,8 +86,8 @@ public class UserInterface {
 			res += "<line class=\"dash\" x1=\""+ x +"\" y1=\""+ y1 +"\" x2=\""+ x +"\" y2=\""+ y2 +"\" stroke-dasharray=\"4, 5\"/>\r\n"
 				+ "<rect class=\"dash\" x=\""+ rectX +"\" y=\""+ y2 +"\" rx=\"5\" ry=\"5\" height=\""+ height +"\"/>\r\n";
 				
-			x += 120;
-			rectX += 120;
+			x += Constants.GAP_X_COORDINATE;
+			rectX += Constants.GAP_X_COORDINATE;
 		}
 		return res;
 	}
@@ -111,6 +115,27 @@ public class UserInterface {
 		return receivePreviousMsg;
 	}
 	
+	private static Map<String, Integer> initialize_MsgPointerList() {
+		for(String process : sortedPoints.keySet()) {
+			processMsgPointer.put(process, 0);
+		}
+		return processMsgPointer;
+	}
+	
+	private static Map<String, Boolean> initialize_WaitingProcessList() {
+		for(String process : sortedPoints.keySet()) {
+			waitingProcess.put(process, false);
+		}
+		return waitingProcess;
+	}
+	
+	private static Map<String, Integer> initialize_lastYList() {
+		for(String process : sortedPoints.keySet()) {
+			lastY.put(process, Constants.STARTING_Y_COORDINATE);
+		}
+		return lastY;
+	}
+	
 	public static void printMsgList( ) {
 		System.out.println("ReceivePreviousMsg:");
 		for (String prevMsg: receivePreviousMsg.keySet()) {
@@ -130,14 +155,14 @@ public class UserInterface {
 			+ "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
 	}
 	
-	public static String drawArrows(List<String> pids) {
+	public static String drawArrows() {
 		fillMsgList();
 		
 		String res = "";
 		String processNumber;
 		String receiverProcess;
 		String message, receiveMessage;
-		int exp;
+		int exp, updatedY;
 		int x1, x2, y1 = Constants.STARTING_Y_COORDINATE, y2 = Constants.STARTING_Y_COORDINATE;
 		int xText, y1Text = Constants.STARTING_Y_TEXT_COORDINATE, y2Text = Constants.STARTING_Y_TEXT_COORDINATE;
 		int auxY1, auxY1Text, auxY2, auxY2Text;
@@ -150,7 +175,19 @@ public class UserInterface {
 			if(exp < 0) { x2 = xValues.get(receiverProcess) - 30; }
 			else { x2 = xValues.get(receiverProcess) + 10; }
 		
-			res += "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
+			if(currentY.containsKey(processNumber)) {
+				updatedY = currentY.get(processNumber) + Constants.GAP_Y_COORDINATE;
+				res += "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ updatedY +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
+				currentY.put(processNumber, updatedY);
+			}
+			else if(currentY.containsKey(receiverProcess)) {
+				updatedY = currentY.get(receiverProcess) + Constants.GAP_Y_COORDINATE;
+				res += "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ updatedY +"\" marker-end=\"url(#arrowhead)\" />";
+				currentY.put(receiverProcess, updatedY);
+			}
+			else {
+				res += "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
+			}
 			
 			xText = x1 + 5; 
 			message = "send "+msgNumber;
@@ -160,16 +197,18 @@ public class UserInterface {
 				auxY1Text = y1Text + Constants.GAP_Y_COORDINATE;
 				receiveMessage = receivePreviousMsg.get(message);
 				res += drawReceivePoint(x1, auxY1, xText, auxY1Text, receiveMessage);
+				currentY.put(processNumber, auxY1);
 				//if there's a receive msg next to another receive msg
 				if(receivePreviousMsg.containsKey(receiveMessage)) { 
 					auxY1 = y1 + Constants.GAP_Y_COORDINATE;
 					auxY1Text = y1Text + Constants.GAP_Y_COORDINATE;
 					res += drawReceivePoint(x1, auxY1, xText, auxY1Text, receivePreviousMsg.get(receiveMessage));
+					currentY.put(processNumber, auxY1);
 				}
-				/*if(receiveNextMsg.containsKey(receiveMessage)) {
-					y1 += Constants.GAP_Y_COORDINATE;
-					y1Text += Constants.GAP_Y_COORDINATE;
-				}*/
+				if(receiveNextMsg.containsKey(receiveMessage)) {
+					updatedY = auxY1 + Constants.GAP_Y_COORDINATE;
+					currentY.put(processNumber, updatedY);
+				}
 			}
 			
 			xText = x2 + 5;
@@ -180,16 +219,18 @@ public class UserInterface {
 				y1Text += Constants.GAP_Y_COORDINATE;
 				receiveMessage = receivePreviousMsg.get(message);
 				res += drawReceivePoint(x2, auxY2, xText, y1Text, receiveMessage);
+				currentY.put(receiverProcess, auxY2);
 				//if there's a receive msg next to another receive msg
 				if(receivePreviousMsg.containsKey(receiveMessage)) { 
 					auxY2 = y2 + Constants.GAP_Y_COORDINATE;
 					y1Text += Constants.GAP_Y_COORDINATE;
 					res += drawReceivePoint(x2, auxY2, xText, y1Text, receivePreviousMsg.get(receiveMessage));
+					currentY.put(receiverProcess, auxY2);
 				}
-				/*if(receiveNextMsg.containsKey(receiveMessage)) {
-					y2 += Constants.GAP_Y_COORDINATE;
-					y2Text += Constants.GAP_Y_COORDINATE;
-				}*/
+				if(receiveNextMsg.containsKey(receiveMessage)) {
+					updatedY = auxY2 + Constants.GAP_Y_COORDINATE;
+					currentY.put(receiverProcess, updatedY);
+				}
 			}
 			
 			y1 += Constants.GAP_Y_COORDINATE;
@@ -200,6 +241,36 @@ public class UserInterface {
 		return res;
 	}
 
+	public static String fillYCoordinates(List<String> pids) {
+		initialize_lastYList();
+		initialize_WaitingProcessList();
+		initialize_MsgPointerList();
+		
+		String res = "";
+		
+		List<String> messages;
+		int msgPointer;
+		String message;
+		
+		while(true) {
+			for(String process : pids) {
+				messages = sortedPoints.get(process);
+				msgPointer = lastY.get(process);
+				// Evitar un IndexOutOfBounds:
+				if(msgPointer >= messages.size()) continue;
+				
+				message = messages.get(msgPointer);
+				
+				// Si se sabe que es un deliver esperando un send, no hace falta ejecutar más instrucciones
+	            if(waitingProcess.get(process)) continue; //siguiente proceso
+	            
+	            //TODO
+			}
+		}
+		
+		return res;
+	}
+	
 	public static String drawMsg(int x1, int y1, int xText, int yText, String msg) {
 		String res = "";
 		
