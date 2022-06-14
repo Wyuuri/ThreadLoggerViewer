@@ -152,15 +152,7 @@ public class UserInterface {
 						exp = process.compareTo(receiverProcess);
 						if(exp < 0) { x2 = xValues.get(receiverProcess) - 30; }
 						else { x2 = xValues.get(receiverProcess) + 10; }
-						
-						coordinates2 = yCoordinates.get(receiverProcess);
-						cont = 0;
-						for(int j = 0; j < coordinates2.size(); j++) {
-							if(!coordinates2.get(j).containsKey(deliverMessage)) {
-								cont++;
-							} else break;
-						}
-						y2 = coordinates2.get(cont).get(deliverMessage);
+						y2 = y1;
 						
 						res += drawMsg(x1,y1, msg);
 						res += drawMsg(x2,y2, deliverMessage);
