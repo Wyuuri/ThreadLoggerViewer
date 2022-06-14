@@ -23,9 +23,6 @@ public class UserInterface {
 	private final static Map<Integer,String> receiveMsg = LogFilesReader.getReceiveMsg();
 	private final static Map<String, Integer> xValues =  LogFilesReader.Xvalues();
 	private final static Map<String,List<String>> sortedPoints = LogFilesReader.getSortedPoints();
-	private static Map<String, String> receivePreviousMsg = new HashMap<>();
-	private static Map<String, String> receiveNextMsg = new HashMap<>();
-	private static Map<String, Integer> currentY = new HashMap<>();
 	private static Map<String, Integer> lastY = new HashMap<>();
 	private static Map<String, Boolean> waitingProcess = new HashMap<>();
 	private static Map<String, Integer> processMsgPointer = new HashMap<>();
@@ -131,9 +128,9 @@ public class UserInterface {
 	public static String drawArrows(List<String> pids) {
 		fillYCoordinates(pids);
 		String res = "";
-		List<Map<String, Integer>> coordinates, coordinates2;
+		List<Map<String, Integer>> coordinates;
 		String senderProcess, receiverProcess, deliverMessage;
-		int x1, x2, y1, y2 = 0, exp, msgNumber, cont;
+		int x1, x2, y1, y2, exp, msgNumber;
 		
 		for(String process : pids) {
 			coordinates = yCoordinates.get(process);
@@ -154,8 +151,8 @@ public class UserInterface {
 						else { x2 = xValues.get(receiverProcess) + 10; }
 						y2 = y1;
 						
-						res += drawMsg(x1,y1, msg);
-						res += drawMsg(x2,y2, deliverMessage);
+						res += drawMsg(x1,y1, msg, exp);
+						res += drawMsg(x2,y2, deliverMessage, exp);
 						res += drawArrow(x1,y1,x2,y2);
 					}
 					else if(msg.contains(Constants.RECEIVE)) {
@@ -181,7 +178,7 @@ public class UserInterface {
 		int msgPointer, msgPointer2;
 		String message, message2;
 		String senderProcess;
-		int y, cont;
+		int y, cont, lastSendY = Constants.STARTING_Y_COORDINATE;
 		
 		while(true) {
 			for(String process : pids) {
@@ -223,7 +220,7 @@ public class UserInterface {
 	                      && getMsgNumber(message2) == getMsgNumber(message)) {
 	                            
 	                      // Calculo de coordenada Y
-	                      y = Math.max(lastY.get(senderProcess), lastY.get(deliverProcess)) 
+	                      y = lastSendY 
 	                          + Constants.GAP_Y_COORDINATE;
 
 	                      Map<String, Integer> pos = new HashMap<>();
@@ -237,6 +234,8 @@ public class UserInterface {
 
 	                      yCoordinates.get(deliverProcess).add(pos2);
 	                      lastY.put(deliverProcess, y);
+	                      
+	                      lastSendY = y;
 
 	                       // Puesto que el deliver y el send ya se han tenido en cuenta, se continua con
 	                       // los siuientes eventos sus respectivos procesos 
@@ -254,6 +253,8 @@ public class UserInterface {
 	                    
 	                    Map<String, Integer> pos = new HashMap<>();
 	                    pos.put(message, y);
+	                    
+	                    lastSendY = y;
 	                    
 	                    yCoordinates.get(process).add(pos);
 	                    lastY.put(process, y);
@@ -288,10 +289,15 @@ public class UserInterface {
 		return res;
 	}
 	
-	public static String drawMsg(int x, int y, String msg) {
+	public static String drawMsg(int x, int y, String msg, int exp) {
 		String res = "";
-		int xText = x + 5, 
+		int xText, 
 			yText = y - 10; 
+		
+		if (msg.contains(Constants.DELIVER)) {
+			xText = (exp < 0) ? x - 35 : x - 5;
+		} else { xText = x + 5; }
+		
 		res = "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x +"\" cy=\""+ y +"\" r=\"2\"></circle>"
 		    + "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
 		return res;
