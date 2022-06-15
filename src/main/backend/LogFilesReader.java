@@ -1,4 +1,4 @@
-package main.java.com.maria.service;
+package main.backend;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,14 +12,12 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import main.java.com.maria.common.Constants;
+import main.common.Constants;
 
 public class LogFilesReader {
 	
-	public static int lastMessageNumber = -1;
-	
 	// process number String --- list of messages (natural order keys)
-	private static Map<String,List<String>> sortedPoints = new TreeMap<>();
+	private static Map<String,List<String>> sortedMessages = new TreeMap<>();
 	
 	// send msg number --- process number String
 	private static Map<Integer,String> sendMsg = new HashMap<>();
@@ -156,8 +154,6 @@ public class LogFilesReader {
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					sendMsg.put(number, processNumber);
 					myMessages.add("send "+ number);
-					
-					lastMessageNumber = (number > lastMessageNumber) ? number : lastMessageNumber;
 				}
 				else if(isDeliver(line)) {
 					pattern = Pattern.compile(Constants.DELIVER_REGEX);
@@ -167,8 +163,6 @@ public class LogFilesReader {
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					deliverMsg.put(number, processNumber);
 					myMessages.add("deliver "+ number);
-					
-					lastMessageNumber = (number > lastMessageNumber) ? number : lastMessageNumber;
 				}
 				else if(isReceive(line)) {
 					pattern = Pattern.compile(Constants.RECEIVE_REGEX);
@@ -178,8 +172,6 @@ public class LogFilesReader {
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					receiveMsg.put(number, processNumber);
 					myMessages.add("receive "+ number);
-					
-					lastMessageNumber = (number > lastMessageNumber) ? number : lastMessageNumber;
 				}
 				else if(isSpawn(line)) {
 					filepath = Constants.PATH + Constants.FILENAME_PREFIX 
@@ -199,7 +191,7 @@ public class LogFilesReader {
 			e.printStackTrace();
 		}
 		
-		sortedPoints.put(processNumber, myMessages);
+		sortedMessages.put(processNumber, myMessages);
 	}
 
 	public static List<String> getAllProcessesNumbers(String path) {
@@ -274,12 +266,7 @@ public class LogFilesReader {
 		return receiveMsg;
 	}
 
-	public static Map<String, List<String>> getSortedPoints() {
-		/*for (String process: sortedPoints.keySet()) {
-		    String key = process.toString();
-		    List<String> value = sortedPoints.get(process);
-		    System.out.println("Process " + key + " and my messages:\n" + value + "\n");
-		}*/
-		return sortedPoints;
+	public static Map<String, List<String>> getSortedMessages() {
+		return sortedMessages;
 	}
 }

@@ -1,4 +1,4 @@
-package main.java.com.maria.view;
+package main.frontend;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,8 +12,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import main.java.com.maria.common.Constants;
-import main.java.com.maria.service.LogFilesReader;
+import main.backend.LogFilesReader;
+import main.common.Constants;
 
 public class UserInterface {
 	
@@ -22,7 +22,7 @@ public class UserInterface {
 	private final static Map<Integer,String> deliverMsg = LogFilesReader.getDeliverMsg();
 	private final static Map<Integer,String> receiveMsg = LogFilesReader.getReceiveMsg();
 	private final static Map<String, Integer> xValues =  LogFilesReader.Xvalues();
-	private final static Map<String,List<String>> sortedPoints = LogFilesReader.getSortedPoints();
+	private final static Map<String,List<String>> sortedMessages = LogFilesReader.getSortedMessages();
 	private static Map<String, Integer> lastY = new HashMap<>();
 	private static Map<String, Boolean> waitingProcess = new HashMap<>();
 	private static Map<String, Integer> processMsgPointer = new HashMap<>();
@@ -91,28 +91,28 @@ public class UserInterface {
 	}
 
 	private static Map<String, Integer> initialize_MsgPointerList() {
-		for(String process : sortedPoints.keySet()) {
+		for(String process : sortedMessages.keySet()) {
 			processMsgPointer.put(process, 0);
 		}
 		return processMsgPointer;
 	}
 	
 	private static Map<String, Boolean> initialize_WaitingProcessList() {
-		for(String process : sortedPoints.keySet()) {
+		for(String process : sortedMessages.keySet()) {
 			waitingProcess.put(process, false);
 		}
 		return waitingProcess;
 	}
 	
 	private static Map<String, Integer> initialize_lastYList() {
-		for(String process : sortedPoints.keySet()) {
+		for(String process : sortedMessages.keySet()) {
 			lastY.put(process, Constants.STARTING_Y_COORDINATE);
 		}
 		return lastY;
 	}
 	
 	private static Map<String, List<Map<String, Integer>>> initialize_YcoordinatesList() {
-		for(String process : sortedPoints.keySet()) {
+		for(String process : sortedMessages.keySet()) {
 			yCoordinates.put(process, new ArrayList<Map<String, Integer>>());
 		}
 		return yCoordinates;
@@ -182,7 +182,7 @@ public class UserInterface {
 		
 		while(true) {
 			for(String process : pids) {
-				messages = sortedPoints.get(process);
+				messages = sortedMessages.get(process);
 				msgPointer = processMsgPointer.get(process);
 				
 				// Evitar un IndexOutOfBounds
@@ -205,7 +205,7 @@ public class UserInterface {
 	                
 	            	// Para cada posible proceso que contenga un deliver:
 	                for(String deliverProcess : pids) {
-	                	messages2 = sortedPoints.get(deliverProcess);
+	                	messages2 = sortedMessages.get(deliverProcess);
 	                	msgPointer2 = processMsgPointer.get(deliverProcess);
 	                   // Evitar un IndexOutOfBounds
 	                   if(msgPointer2 >= messages2.size()) continue;
@@ -266,7 +266,7 @@ public class UserInterface {
 	        // de todos los eventos
 	        cont = 0;
 	        for(String proceso : pids) {
-	          if(processMsgPointer.get(proceso) != sortedPoints.get(proceso).size()) break;
+	          if(processMsgPointer.get(proceso) != sortedMessages.get(proceso).size()) break;
 	          cont++;
 	        }
 	        if(cont == pids.size()) {
