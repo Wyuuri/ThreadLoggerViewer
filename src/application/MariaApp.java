@@ -16,7 +16,7 @@ import main.common.Constants;
 import main.frontend.UserInterface;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -44,14 +44,14 @@ public class MariaApp extends Application {
 	    WebView webView = new WebView();
 	    webEngine = webView.getEngine();
 	    
-	    HBox hBox = new HBox();
-		hBox.getChildren().addAll(button);
+	    ToolBar toolBar = new ToolBar();
+	    toolBar.getItems().add(button);
 	    
 	    VBox vBox = new VBox();
 	    VBox.setVgrow(webView, Priority.ALWAYS);
-	    vBox.getChildren().addAll(hBox, webView);
+	    vBox.getChildren().addAll(toolBar, webView);
 	    
-	    Scene scene = new Scene(vBox,600,800); //TODO: Change height
+	    Scene scene = new Scene(vBox,800,960); //TODO: Change height
 	    //scene.getStylesheets().add(getClass().getResource("view.css").toExternalForm());
 	    stage.setScene(scene);
 	    stage.setTitle("Thread Logger Viewer");
@@ -64,9 +64,10 @@ public class MariaApp extends Application {
 		// Backend
 		LogFilesReader log = new LogFilesReader();
 		String firstProcess = String.valueOf(log.getLaunchProcess(startFile));
+		LogFilesReader.setTracePath(tracePath);
 		LogFilesReader.readLineByLine(tracePath + "trace_" + firstProcess + ".log");
 		    
-		webEngine.loadContent(UserInterface.readHTMLFile_andBeautify());
+		webEngine.loadContent(UserInterface.readHTMLFile_andBeautify(tracePath));
 	 }
 	 
 	 private String getTracePath(Stage stage) {

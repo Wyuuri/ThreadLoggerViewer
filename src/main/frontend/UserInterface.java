@@ -28,7 +28,7 @@ public class UserInterface {
 	private static Map<String, Integer> processMsgPointer = new HashMap<>();
 	private static Map<String, List<Map<String, Integer>>> yCoordinates = new TreeMap<>();
 	
-	public static String readHTMLFile_andBeautify() {
+	public static String readHTMLFile_andBeautify(String tracePath) {
 		String res = "";
 		
 		try {  
@@ -37,7 +37,7 @@ public class UserInterface {
 			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
 			StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
 		
-			List<String> pids = LogFilesReader.getAllProcessesNumbers(Constants.PATH);
+			List<String> pids = LogFilesReader.getAllProcessesNumbers(tracePath);
 			
 			String processes = "";
 			String historyLines = "";

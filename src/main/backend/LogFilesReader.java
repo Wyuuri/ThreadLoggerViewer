@@ -16,6 +16,8 @@ import main.common.Constants;
 
 public class LogFilesReader {
 	
+	public static String tracePath;
+	
 	// process number String --- list of messages (natural order keys)
 	private static Map<String,List<String>> sortedMessages = new TreeMap<>();
 	
@@ -78,39 +80,6 @@ public class LogFilesReader {
 		//return path.substring(path.length()-6, path.length()-4);
 	}
 	
-	@Deprecated
-	public int getSpawnedProcess(String path) {
-		int pidNum = 0;
-		
-		try {  
-			File file=new File(path);    //creates a new file instance  
-			FileReader fr = new FileReader(file);   //reads the file  
-			BufferedReader br = new BufferedReader(fr);  //creates a buffering character input stream  
-			StringBuffer sb = new StringBuffer();    //constructs a string buffer with no characters  
-			
-			String line;  
-			while((line=br.readLine())!=null && isSpawn(line)) {
-					Pattern pattern = Pattern.compile("(\\d+)");
-			        Matcher matcher = pattern.matcher(line);
-
-			        matcher.find();
-			        pidNum = Integer.valueOf(line.substring(matcher.start(), matcher.end()));
-					sb.append(pidNum);      //appends line to string buffer  
-					sb.append("\n");     //line feed 
-					break;
-				
-			}  
-			fr.close();    //closes the stream and release the resources  
-			System.out.println("Spawned proccess: ");  
-			System.out.println(sb.toString());   //returns a string that textually represents the object  
-		}  
-		catch(IOException e) {  
-			e.printStackTrace();
-		}
-		
-		return pidNum;
-	}
-	
 	public static boolean isSpawn(String line) {
 		return line.contains(Constants.SPAWN);
 	}
@@ -127,8 +96,11 @@ public class LogFilesReader {
 		return line.contains(Constants.DELIVER);
 	}
 	
+	public static void setTracePath(String tracepath) {
+		tracePath = tracepath;
+	}
+	
 	public static void readLineByLine(String path) {
-		
 		String processNumber = getProcessNumber(path);
 		List<String> myMessages = new ArrayList<>();
 		
@@ -174,7 +146,7 @@ public class LogFilesReader {
 					myMessages.add("receive "+ number);
 				}
 				else if(isSpawn(line)) {
-					filepath = Constants.PATH + Constants.FILENAME_PREFIX 
+					filepath = tracePath + Constants.FILENAME_PREFIX 
 							+ getProcessNumber(line) + Constants.FILE_EXTENSION;
 					
 					readLineByLine(filepath);
@@ -220,22 +192,18 @@ public class LogFilesReader {
 	}
 	
 	public static Map<String, Integer> Xvalues() {
-		List<String> pids = getAllProcessesNumbers(Constants.PATH);
+		List<String> pids = getAllProcessesNumbers(tracePath);
 		int x = Constants.STARTING_X_COORDINATE;
 		for(String pid : pids) {
 			xValues.put(pid, x);
 			x += Constants.GAP_X_COORDINATE;
 		}
-		/*for (String pid: xValues.keySet()) {
-		    String value = xValues.get(pid).toString();
-		    System.out.println(pid + " " + value);
-		}*/
 		return xValues;
 	}
 	
 	
 	public static int numberOfProcesses() {
-		List<String> processes = getAllProcessesNumbers(Constants.PATH);
+		List<String> processes = getAllProcessesNumbers(tracePath);
 		return processes.size();
 	}
 	
