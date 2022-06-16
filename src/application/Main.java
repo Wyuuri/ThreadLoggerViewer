@@ -5,7 +5,6 @@ import main.common.Constants;
 
 public class Main {
 	public static void main(String[] args) {
-		Application.launch(MariaApp.class, 
-		"--tracePath=" + Constants.PATH);
+		Application.launch(MariaApp.class, args);
 	}
 }
