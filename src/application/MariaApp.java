@@ -25,7 +25,6 @@ import javafx.scene.web.WebView;
 
 public class MariaApp extends Application {
 	
-	 private final static String htmlFilepath = Constants.UI_PATH + Constants.HTML_FILENAME;
 	 private static WebEngine webEngine;
 	 String tracePath;
 	

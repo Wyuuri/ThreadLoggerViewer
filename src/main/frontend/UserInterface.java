@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +18,6 @@ import main.common.Constants;
 
 public class UserInterface {
 	
-	private final static String htmlFilepath = Constants.UI_PATH + Constants.HTML_FILENAME;
 	private final static Map<Integer,String> sendMsg = LogFilesReader.getSendMsg();
 	private final static Map<Integer,String> deliverMsg = LogFilesReader.getDeliverMsg();
 	private final static Map<Integer,String> receiveMsg = LogFilesReader.getReceiveMsg();
@@ -32,7 +32,8 @@ public class UserInterface {
 		String res = "";
 		
 		try {  
-			File file=new File(htmlFilepath);    //creates a new file instance  
+			URL url = UserInterface.class.getResource(Constants.HTML_FILENAME);
+			File file = new File(url.getPath());    //creates a new file instance  
 			FileReader fr=new FileReader(file);   //reads the file  
 			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
 			StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
