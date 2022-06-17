@@ -1,10 +1,6 @@
 package application;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -61,8 +57,7 @@ public class MariaApp extends Application {
 		 String startFile = tracePath + Constants.START_FILE;
 		 
 		// Backend
-		LogFilesReader log = new LogFilesReader();
-		String firstProcess = String.valueOf(log.getLaunchProcess(startFile));
+		String firstProcess = String.valueOf(LogFilesReader.getLaunchProcess(startFile));
 		LogFilesReader.setTracePath(tracePath);
 		LogFilesReader.readLineByLine(tracePath + "trace_" + firstProcess + ".log");
 		    

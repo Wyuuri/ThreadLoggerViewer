@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import main.common.Constants;
+import main.common.StyleUtils;
 
 public class LogFilesReader {
 	
@@ -33,9 +34,7 @@ public class LogFilesReader {
 	// process number String --- X coordinate
 	private static Map<String, Integer> xValues = new TreeMap<>();
 	
-	public LogFilesReader( ) { }
-	
-	public int getLaunchProcess(String path) {
+	public static int getLaunchProcess(String path) {
 		int pidNum = 0;
 		
 		try {  
@@ -69,6 +68,10 @@ public class LogFilesReader {
 		return pidNum;
 	}
 	
+	/**
+	 * @param Any path that contains the log filename
+	 * @return Number of the process associated to the log file
+	 */
 	public static String getProcessNumber(String path) {
 		Pattern pattern = Pattern.compile("(\\d+)");
         Matcher matcher = pattern.matcher(path);
@@ -76,8 +79,6 @@ public class LogFilesReader {
         
         // Last number matched from path
         return matcher.group(matcher.groupCount());
-        
-		//return path.substring(path.length()-6, path.length()-4);
 	}
 	
 	public static boolean isSpawn(String line) {
@@ -176,16 +177,9 @@ public class LogFilesReader {
 	      
 	    //List of processes numbers
 	      List<String> pids = new ArrayList<>();
-	      
-	    //System.out.println("List of files and directories in the specified directory:");
-	      System.out.println("List of process numbers:");
 	    
 	    for(int i=0; i<contents.length && contents[i].endsWith(".log") && contents[i].matches(".*[0-9].*"); i++) {
-	       System.out.println(contents[i]);
-	       
-	       System.out.println(getProcessNumber(contents[i]));
-	       
-	       pids.add(getProcessNumber(contents[i]));
+	    	pids.add(getProcessNumber(contents[i]));
 	    }
 	      
 	      return pids;
@@ -193,10 +187,10 @@ public class LogFilesReader {
 	
 	public static Map<String, Integer> Xvalues() {
 		List<String> pids = getAllProcessesNumbers(tracePath);
-		int x = Constants.STARTING_X_COORDINATE;
+		int x = StyleUtils.STARTING_X_COORDINATE;
 		for(String pid : pids) {
 			xValues.put(pid, x);
-			x += Constants.GAP_X_COORDINATE;
+			x += StyleUtils.GAP_X_COORDINATE;
 		}
 		return xValues;
 	}
@@ -208,29 +202,14 @@ public class LogFilesReader {
 	}
 	
 	public static Map<Integer,String> getSendMsg( ) {
-		for (Integer name: sendMsg.keySet()) {
-		    String key = name.toString();
-		    String value = sendMsg.get(name).toString();
-		    System.out.println(key + " " + value);
-		}
 		return sendMsg;
 	}
 	
 	public static Map<Integer,String> getDeliverMsg( ) {
-		for (Integer name: deliverMsg.keySet()) {
-		    String key = name.toString();
-		    String value = deliverMsg.get(name).toString();
-		    System.out.println(key + " " + value);
-		}
 		return deliverMsg;
 	}
 	
 	public static Map<Integer,String> getReceiveMsg( ) {
-		for (Integer name: receiveMsg.keySet()) {
-		    String key = name.toString();
-		    String value = receiveMsg.get(name).toString();
-		    System.out.println("" + key + " " + value);
-		}
 		return receiveMsg;
 	}
 

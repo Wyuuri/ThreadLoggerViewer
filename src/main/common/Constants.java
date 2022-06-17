@@ -16,9 +16,4 @@ public class Constants {
 	public final static String FILE_EXTENSION = ".log";
 	public final static String HTML_FILENAME = "view.html";
 	public final static String PROCESSES_FILENAME = "processes.txt";
-	public final static int STARTING_X_COORDINATE = 30;
-	public final static int STARTING_Y_COORDINATE = 50;
-	public final static int GAP_X_COORDINATE = 120;
-	public final static int GAP_Y_COORDINATE = 30;
-	public final static int STARTING_Y_TEXT_COORDINATE = 40;
 }

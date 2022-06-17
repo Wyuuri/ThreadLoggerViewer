@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import main.backend.LogFilesReader;
 import main.common.Constants;
+import main.common.StyleUtils;
 
 public class UserInterface {
 	
@@ -34,9 +35,9 @@ public class UserInterface {
 		try {  
 			URL url = UserInterface.class.getResource(Constants.HTML_FILENAME);
 			File file = new File(url.getPath());    //creates a new file instance  
-			FileReader fr=new FileReader(file);   //reads the file  
-			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
-			StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
+			FileReader fr = new FileReader(file);   //reads the file  
+			BufferedReader br = new BufferedReader(fr);  //creates a buffering character input stream  
+			StringBuffer sb = new StringBuffer();    //constructs a string buffer with no characters  
 		
 			List<String> pids = LogFilesReader.getAllProcessesNumbers(tracePath);
 			
@@ -74,19 +75,21 @@ public class UserInterface {
 	}
 
 	public static String drawHistoryLines(int size) {
-		int x = 20;
-		int rectX = 10;
-		int y1 = 0;
-		int y2 = 30; // when process history starts, increase 30 by 30
-		String height = "100%"; // same height that the SVG wrapper
+		int x = StyleUtils.STARTING_X_DASHED_LINE;
+		int y1 = StyleUtils.STARTING_Y_DASHED_LINE;
+		int y2 = StyleUtils.STARTING_Y_DASHED_RECTANGLE; // when process history starts, increase 30 by 30
+		int rectX = StyleUtils.STARTING_X_DASHED_RECTANGLE;
+		String height = StyleUtils.DASHED_RECTANGLE_HEIGHT;
+		int rx = StyleUtils.DASHED_RECTANGLE_X_CORNER_ROUND, 
+			ry = StyleUtils.DASHED_RECTANGLE_Y_CORNER_ROUND;
 		
 		String res = "";
 		for(int i = 0; i < size; i++) {
 			res += "<line class=\"dash\" x1=\""+ x +"\" y1=\""+ y1 +"\" x2=\""+ x +"\" y2=\""+ y2 +"\" stroke-dasharray=\"4, 5\"/>\r\n"
-				+ "<rect class=\"dash\" x=\""+ rectX +"\" y=\""+ y2 +"\" rx=\"5\" ry=\"5\" height=\""+ height +"\"/>\r\n";
+				+ "<rect class=\"dash\" x=\""+ rectX +"\" y=\""+ y2 +"\" rx=\"" + rx + "\" ry=\"" + ry + "\" height=\""+ height +"\"/>\r\n";
 				
-			x += Constants.GAP_X_COORDINATE;
-			rectX += Constants.GAP_X_COORDINATE;
+			x += StyleUtils.GAP_X_COORDINATE;
+			rectX += StyleUtils.GAP_X_COORDINATE;
 		}
 		return res;
 	}
@@ -107,7 +110,7 @@ public class UserInterface {
 	
 	private static Map<String, Integer> initialize_lastYList() {
 		for(String process : sortedMessages.keySet()) {
-			lastY.put(process, Constants.STARTING_Y_COORDINATE);
+			lastY.put(process, StyleUtils.STARTING_Y_COORDINATE);
 		}
 		return lastY;
 	}
@@ -179,7 +182,7 @@ public class UserInterface {
 		int msgPointer, msgPointer2;
 		String message, message2;
 		String senderProcess;
-		int y, cont, lastSendY = Constants.STARTING_Y_COORDINATE;
+		int y, cont, lastSendY = StyleUtils.STARTING_Y_COORDINATE;
 		
 		while(true) {
 			for(String process : pids) {
@@ -222,7 +225,7 @@ public class UserInterface {
 	                            
 	                      // Calculo de coordenada Y
 	                      y = lastSendY 
-	                          + Constants.GAP_Y_COORDINATE;
+	                          + StyleUtils.GAP_Y_COORDINATE;
 
 	                      Map<String, Integer> pos = new HashMap<>();
 	                      pos.put(message, y);
@@ -250,7 +253,7 @@ public class UserInterface {
 	            }
 	            // Para el caso del receive solo se debe calcular la coordenada Y y añadirlo a y_axis_process
 	            else if(message.contains("receive")) {
-	                    y = lastY.get(process) + Constants.GAP_Y_COORDINATE;
+	                    y = lastY.get(process) + StyleUtils.GAP_Y_COORDINATE;
 	                    
 	                    Map<String, Integer> pos = new HashMap<>();
 	                    pos.put(message, y);
@@ -271,7 +274,8 @@ public class UserInterface {
 	          cont++;
 	        }
 	        if(cont == pids.size()) {
-	        	printYcoordinates(); return yCoordinates;
+	        	printYcoordinates(); 
+	        	return yCoordinates;
 	        }
 			
 		}
