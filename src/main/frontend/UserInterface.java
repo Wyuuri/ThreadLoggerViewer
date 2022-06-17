@@ -285,6 +285,13 @@ public class UserInterface {
 		return "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
 	}
 	
+	/**
+	 * @param x - The x coordinate of a process, stored in the xValues HashMap
+	 * @param y - The y coordinate of a message of this process, stored in the yCoordinates HashMap
+	 * @param msg - The message to be written
+	 * 
+	 * @return The HTML elements in raw string, draws the message above a circle
+	 */
 	public static String drawReceivePoint(int x, int y, String msg) {
 		String res = "";
 		int xText = x + 5, 

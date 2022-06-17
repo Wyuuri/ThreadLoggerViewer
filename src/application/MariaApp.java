@@ -46,6 +46,10 @@ public class MariaApp extends Application {
 	    VBox.setVgrow(webView, Priority.ALWAYS);
 	    vBox.getChildren().addAll(toolBar, webView);
 	    
+	    // Default path for testing
+	    tracePath = "D:\\trace\\";
+		loadHTML(tracePath);
+	    
 	    Scene scene = new Scene(vBox,800,960); //TODO: Change height
 	    //scene.getStylesheets().add(getClass().getResource("view.css").toExternalForm());
 	    stage.setScene(scene);
