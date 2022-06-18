@@ -28,7 +28,7 @@ public class UserInterface {
 	private static Map<String, Boolean> waitingProcess = new HashMap<>();
 	private static Map<String, Integer> processMsgPointer = new HashMap<>();
 	private static Map<String, List<Map<String, Integer>>> yCoordinates = new TreeMap<>();
-	private static int maxY = -1;
+	private static int maxY = -1, dashed_rectangle_height;
 	
 	public static String readHTMLFile_andBeautify(String tracePath) {
 		String res = "";
@@ -42,6 +42,8 @@ public class UserInterface {
 		
 			List<String> pids = LogFilesReader.getAllProcessesNumbers(tracePath);
 			fillYCoordinates(pids); // maxY is calculated in this method
+			dashed_rectangle_height = getMaxY() + StyleUtils.GAP_Y_COORDINATE;
+			int svg_height = dashed_rectangle_height + 100;
 			
 			String processes = "";
 			String historyLines = "";
@@ -56,7 +58,7 @@ public class UserInterface {
 					sb.append(processes);
 					continue;
 				} else if(line.trim().equals("toBeChanged2")) {
-					svgHeader = "<svg width=\"100%\" height=\"" + StyleUtils.SVG_HEIGHT + "\" style=\"margin-left:30px;\">";
+					svgHeader = "<svg width=\"100%\" height=\"" + svg_height + "\" style=\"margin-left:30px;\">";
 					sb.append(svgHeader);
 					historyLines = drawHistoryLines(pids.size());
 					sb.append(historyLines);
@@ -84,9 +86,9 @@ public class UserInterface {
 		int y1 = StyleUtils.STARTING_Y_DASHED_LINE;
 		int y2 = StyleUtils.STARTING_Y_DASHED_RECTANGLE; // when process history starts, increase 30 by 30
 		int rectX = StyleUtils.STARTING_X_DASHED_RECTANGLE;
-		int height = StyleUtils.DASHED_RECTANGLE_HEIGHT;
 		int rx = StyleUtils.DASHED_RECTANGLE_X_CORNER_ROUND, 
 			ry = StyleUtils.DASHED_RECTANGLE_Y_CORNER_ROUND;
+		int height = dashed_rectangle_height;
 		
 		String res = "";
 		for(int i = 0; i < size; i++) {
