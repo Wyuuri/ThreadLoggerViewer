@@ -344,7 +344,7 @@ public class UserInterface {
 			yText = y - 10; 
 		
 		if (msg.contains(Constants.DELIVER)) {
-			xText = (exp < 0) ? x - 50 : x - 5;
+			xText = (exp < 0) ? x - StyleUtils.TEXT_TO_THE_LEFT : x - 5;
 		} else { xText = x + 5; }
 		
 		res = "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x +"\" cy=\""+ y +"\" r=\"2\"></circle>"
