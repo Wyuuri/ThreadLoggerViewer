@@ -5,6 +5,7 @@ import java.io.File;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import main.backend.LogFilesReader;
@@ -12,21 +13,31 @@ import main.common.Constants;
 import main.frontend.UserInterface;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 
-public class MariaApp extends Application {
+public class App extends Application {
 	
 	 private static WebEngine webEngine;
 	 String tracePath;
 	
 	 @Override
 	 public void start(Stage stage) throws Exception {
-		Button button = new Button("Select a directory");
+		 
+	    // Frontend
+	    WebView webView = new WebView();
+	    webEngine = webView.getEngine();
+	    
+	    Button button = new Button("Select a directory");
 		button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -34,12 +45,8 @@ public class MariaApp extends Application {
 				loadHTML(tracePath);
 			}
 		});
-		
-	    // Frontend
-	    WebView webView = new WebView();
-	    webEngine = webView.getEngine();
-	    
-	    ToolBar toolBar = new ToolBar();
+
+		ToolBar toolBar = new ToolBar();
 	    toolBar.getItems().add(button);
 	    
 	    VBox vBox = new VBox();
@@ -50,9 +57,10 @@ public class MariaApp extends Application {
 	    tracePath = "D:\\trace\\";
 		loadHTML(tracePath);
 	    
-	    Scene scene = new Scene(vBox,800,960); //TODO: Change height
-	    //scene.getStylesheets().add(getClass().getResource("view.css").toExternalForm());
+	    Scene scene = new Scene(vBox,800,800);
+	    scene.getStylesheets().add(getClass().getResource("/main/frontend/button.css").toExternalForm());
 	    stage.setScene(scene);
+	    stage.getIcons().add(new Image(getClass().getResourceAsStream("/main/frontend/icon.jpg")));
 	    stage.setTitle("Thread Logger Viewer");
 	    stage.show();
 	}
