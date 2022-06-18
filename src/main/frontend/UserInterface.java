@@ -28,6 +28,7 @@ public class UserInterface {
 	private static Map<String, Boolean> waitingProcess = new HashMap<>();
 	private static Map<String, Integer> processMsgPointer = new HashMap<>();
 	private static Map<String, List<Map<String, Integer>>> yCoordinates = new TreeMap<>();
+	private static int maxY = -1;
 	
 	public static String readHTMLFile_andBeautify(String tracePath) {
 		String res = "";
@@ -40,10 +41,12 @@ public class UserInterface {
 			StringBuffer sb = new StringBuffer();    //constructs a string buffer with no characters  
 		
 			List<String> pids = LogFilesReader.getAllProcessesNumbers(tracePath);
+			fillYCoordinates(pids); // maxY is calculated in this method
 			
 			String processes = "";
 			String historyLines = "";
 			String msgLines = "";
+			String svgHeader = "";
 			String line;
 			while((line=br.readLine())!=null) {
 				if(line.trim().equals("toBeChanged")) {
@@ -53,6 +56,8 @@ public class UserInterface {
 					sb.append(processes);
 					continue;
 				} else if(line.trim().equals("toBeChanged2")) {
+					svgHeader = "<svg width=\"100%\" height=\"" + StyleUtils.SVG_HEIGHT + "\" style=\"margin-left:30px;\">";
+					sb.append(svgHeader);
 					historyLines = drawHistoryLines(pids.size());
 					sb.append(historyLines);
 					continue;
@@ -79,7 +84,7 @@ public class UserInterface {
 		int y1 = StyleUtils.STARTING_Y_DASHED_LINE;
 		int y2 = StyleUtils.STARTING_Y_DASHED_RECTANGLE; // when process history starts, increase 30 by 30
 		int rectX = StyleUtils.STARTING_X_DASHED_RECTANGLE;
-		String height = StyleUtils.DASHED_RECTANGLE_HEIGHT;
+		int height = StyleUtils.DASHED_RECTANGLE_HEIGHT;
 		int rx = StyleUtils.DASHED_RECTANGLE_X_CORNER_ROUND, 
 			ry = StyleUtils.DASHED_RECTANGLE_Y_CORNER_ROUND;
 		
@@ -130,7 +135,6 @@ public class UserInterface {
 	}
 	
 	public static String drawArrows(List<String> pids) {
-		fillYCoordinates(pids);
 		String res = "";
 		List<Map<String, Integer>> coordinates;
 		String senderProcess, receiverProcess, deliverMessage;
@@ -240,6 +244,7 @@ public class UserInterface {
 	                      lastY.put(deliverProcess, y);
 	                      
 	                      lastSendY = y;
+	                      if(maxY < y) { maxY = y; }
 
 	                       // Puesto que el deliver y el send ya se han tenido en cuenta, se continua con
 	                       // los siuientes eventos sus respectivos procesos 
@@ -321,5 +326,9 @@ public class UserInterface {
         matcher.find();
         String msgNumber = message.substring(matcher.start(), matcher.end());
         return Integer.valueOf(msgNumber);
+	}
+	
+	public static int getMaxY() {
+		return maxY;
 	}
 }
