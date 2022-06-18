@@ -7,7 +7,7 @@
         }
 
         .process-style {
-         border-style:solid;
+         border-style:double;
          border-color:#11a725;
          width:70px;
          padding:5px;
@@ -20,20 +20,24 @@
         .grid { width: 200px; height: auto;}
         
         rect.dash {
-         fill:white; 
-         stroke:black; 
-         stroke-width:2; 
-         opacity:1.0;
+         fill:rgb(200, 233, 181); 
+         stroke:darkgreen; 
+         stroke-width:1;
          width:20;
          stroke-dasharray:10 3; /* dashed size and gap size */
         }
         line.dash {
-          stroke:rgb(255,0,0);
+          stroke:rgb(20, 121, 0);
           stroke-width:2;
         }
-        line.msg {
+        line.arrow {
           stroke:black;
           stroke-width:2;
+        }
+        text.msg {
+          font-style: oblique;
+          font-size: 14px; /* 10px; */
+          fill:black;
         }
     </style>
     <title>Thread Logger Viewer</title>

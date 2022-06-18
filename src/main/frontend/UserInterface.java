@@ -302,14 +302,20 @@ public class UserInterface {
 		}
 	}
 	
+	/**
+	 * @param x1, y1 - The x and y coordinate of the sender process
+	 * @param x2, y2 - The x and y coordinate of the receiver process
+	 * 
+	 * @return The HTML elements in raw string, draws an arrow from the sender to the receiver process
+	 */
 	public static String drawArrow(int x1, int y1, int x2, int y2) {
-		return "<line class=\"msg\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
+		return "<line class=\"arrow\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
 	}
 	
 	/**
-	 * @param x - The x coordinate of a process, stored in the xValues HashMap
-	 * @param y - The y coordinate of a message of this process, stored in the yCoordinates HashMap
-	 * @param msg - The message to be written
+	 * @param x - The x coordinate of a process
+	 * @param y - The y coordinate of a message of this process
+	 * @param msg - The "receive" message to be written
 	 * 
 	 * @return The HTML elements in raw string, draws the message above a circle
 	 */
@@ -318,21 +324,31 @@ public class UserInterface {
 		int xText = x + 5, 
 			yText = y - 10; 
 		res = "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x +"\" cy=\""+ y +"\" r=\"5\"></circle>"
-			+ "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
+			+ "<text class=\"msg\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" dy=\"1px\">" + msg + "</text>";
 		return res;
 	}
 	
+	/**
+	 * This method takes the font-size into account, to re-calculate the x, 
+	 * so the elements don't overlap with any dashed rectangle.
+	 * 
+	 * @param x - The x coordinate of a process
+	 * @param y - The y coordinate of a message of this process
+	 * @param msg - The "send" or "deliver" message to be written
+	 * 
+	 * @return The HTML elements in raw string, draws the message above a circle
+	 */
 	public static String drawMsg(int x, int y, String msg, int exp) {
 		String res = "";
 		int xText, 
 			yText = y - 10; 
 		
 		if (msg.contains(Constants.DELIVER)) {
-			xText = (exp < 0) ? x - 35 : x - 5;
+			xText = (exp < 0) ? x - 50 : x - 5;
 		} else { xText = x + 5; }
 		
 		res = "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x +"\" cy=\""+ y +"\" r=\"2\"></circle>"
-		    + "<text font-size=\"10\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" stroke=\"red\" stroke-width=\"1px\" dy=\"1px\">" + msg + "</text>";
+		    + "<text class=\"msg\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" dy=\"1px\">" + msg + "</text>";
 		return res;
 	}
 	
