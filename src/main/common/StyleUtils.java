@@ -1,7 +1,5 @@
 package main.common;
 
-import main.frontend.UserInterface;
-
 public class StyleUtils {
 	
 	public final static int STARTING_X_COORDINATE = 30;

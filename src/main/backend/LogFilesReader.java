@@ -31,9 +31,6 @@ public class LogFilesReader {
 	// receive msg number --- process number String
 	private static Map<Integer,String> receiveMsg = new HashMap<>();
 	
-	// process number String --- X coordinate
-	private static Map<String, Integer> xValues = new TreeMap<>();
-	
 	public static int getLaunchProcess(String path) {
 		int pidNum = 0;
 		
@@ -184,17 +181,6 @@ public class LogFilesReader {
 	      
 	      return pids;
 	}
-	
-	public static Map<String, Integer> Xvalues() {
-		List<String> pids = getAllProcessesNumbers(tracePath);
-		int x = StyleUtils.STARTING_X_COORDINATE;
-		for(String pid : pids) {
-			xValues.put(pid, x);
-			x += StyleUtils.GAP_X_COORDINATE;
-		}
-		return xValues;
-	}
-	
 	
 	public static int numberOfProcesses() {
 		List<String> processes = getAllProcessesNumbers(tracePath);

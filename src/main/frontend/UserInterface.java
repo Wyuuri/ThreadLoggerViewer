@@ -22,13 +22,14 @@ public class UserInterface {
 	private final static Map<Integer,String> sendMsg = LogFilesReader.getSendMsg();
 	private final static Map<Integer,String> deliverMsg = LogFilesReader.getDeliverMsg();
 	private final static Map<Integer,String> receiveMsg = LogFilesReader.getReceiveMsg();
-	private final static Map<String, Integer> xValues =  LogFilesReader.Xvalues();
 	private final static Map<String,List<String>> sortedMessages = LogFilesReader.getSortedMessages();
 	private static Map<String, Integer> lastY = new HashMap<>();
 	private static Map<String, Boolean> waitingProcess = new HashMap<>();
 	private static Map<String, Integer> processMsgPointer = new HashMap<>();
+	// process number String --- X coordinate
+	private static Map<String, Integer> xCoordinates = new TreeMap<>();
 	private static Map<String, List<Map<String, Integer>>> yCoordinates = new TreeMap<>();
-	private static int maxY = -1, dashed_rectangle_height;
+	private static int maxX, maxY = -1, dashed_rectangle_height;
 	
 	public static String readHTMLFile_andBeautify(String tracePath) {
 		String res = "";
@@ -41,8 +42,11 @@ public class UserInterface {
 			StringBuffer sb = new StringBuffer();    //constructs a string buffer with no characters  
 		
 			List<String> pids = LogFilesReader.getAllProcessesNumbers(tracePath);
+			fillXCoordinates(pids); // maxX is calculated in this method
 			fillYCoordinates(pids); // maxY is calculated in this method
+			
 			dashed_rectangle_height = getMaxY() + StyleUtils.GAP_Y_COORDINATE;
+			int svg_width = getMaxX() + StyleUtils.GAP_X_COORDINATE + 100;
 			int svg_height = dashed_rectangle_height + 100;
 			
 			String processes = "";
@@ -58,7 +62,7 @@ public class UserInterface {
 					sb.append(processes);
 					continue;
 				} else if(line.trim().equals("toBeChanged2")) {
-					svgHeader = "<svg width=\"100%\" height=\"" + svg_height + "\" style=\"margin-left:30px;\">";
+					svgHeader = "<svg width=\""+ svg_width +"\" height=\""+ svg_height +"\" style=\"margin-left:30px;\">";
 					sb.append(svgHeader);
 					historyLines = drawHistoryLines(pids.size());
 					sb.append(historyLines);
@@ -153,12 +157,12 @@ public class UserInterface {
 						senderProcess = sendMsg.get(msgNumber);
 						receiverProcess = deliverMsg.get(msgNumber);
 						
-						x1 = xValues.get(senderProcess);
+						x1 = xCoordinates.get(senderProcess);
 						y1 = coordinates.get(i).get(msg);
 						
 						exp = process.compareTo(receiverProcess);
-						if(exp < 0) { x2 = xValues.get(receiverProcess) - 30; }
-						else { x2 = xValues.get(receiverProcess) + 10; }
+						if(exp < 0) { x2 = xCoordinates.get(receiverProcess) - 30; }
+						else { x2 = xCoordinates.get(receiverProcess) + 10; }
 						y2 = y1;
 						
 						res += drawMsg(x1,y1, msg, exp);
@@ -167,7 +171,7 @@ public class UserInterface {
 					}
 					else if(msg.contains(Constants.RECEIVE)) {
 						receiverProcess = receiveMsg.get(getMsgNumber(msg));
-						x2 = xValues.get(receiverProcess);
+						x2 = xCoordinates.get(receiverProcess);
 						y2 = coordinates.get(i).get(msg);
 						res += drawReceivePoint(x2, y2, msg);
 					}
@@ -178,6 +182,16 @@ public class UserInterface {
 		return res;
 	}
 
+	public static Map<String, Integer> fillXCoordinates(List<String> pids) {
+		int x = StyleUtils.STARTING_X_COORDINATE;
+		for(String pid : pids) {
+			xCoordinates.put(pid, x);
+			if(maxX < x) { maxX = x; }
+			x += StyleUtils.GAP_X_COORDINATE;
+		}
+		return xCoordinates;
+	}
+	
 	public static Map<String, List<Map<String, Integer>>> fillYCoordinates(List<String> pids) {
 		initialize_lastYList();
 		initialize_WaitingProcessList();
@@ -330,7 +344,11 @@ public class UserInterface {
         return Integer.valueOf(msgNumber);
 	}
 	
-	public static int getMaxY() {
+	private static int getMaxX() {
+		return maxX;
+	}
+	
+	private static int getMaxY() {
 		return maxY;
 	}
 }
