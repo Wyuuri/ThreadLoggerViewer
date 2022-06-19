@@ -58,7 +58,7 @@ public class App extends Application {
 	    tracePath = "D:\\trace\\";
 		loadHTML(tracePath);
 	    
-	    Scene scene = new Scene(vBox,800,800);
+	    Scene scene = new Scene(vBox);
 	    scene.getStylesheets().add(Constants.CSS_FILEPATH);
 	    stage.setScene(scene);
 	    stage.getIcons().add(new Image(Constants.LOGO_PATH));

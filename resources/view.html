@@ -6,12 +6,6 @@
           overflow-x:hidden;
         }
 
-        div.position{
-          position: top;
-          border-style: dotted;
-          border-color:darkolivegreen;
-        }
-
         .process-style {
          border-style:double;
          border-color:#11a725;
@@ -28,20 +22,20 @@
           margin-left: 47.5px;
         }
         
+        line.arrow {
+          stroke:black;
+          stroke-width:2;
+        }
+        line.dash {
+          stroke:rgb(20, 121, 0);
+          stroke-width:2;
+        }
         rect.dash {
          fill:rgb(200, 233, 181); 
          stroke:darkgreen; 
          stroke-width:1;
          width:20;
          stroke-dasharray:10 3; /* dashed size and gap size */
-        }
-        line.dash {
-          stroke:rgb(20, 121, 0);
-          stroke-width:2;
-        }
-        line.arrow {
-          stroke:black;
-          stroke-width:2;
         }
         text.msg {
           font-style: oblique;
@@ -53,7 +47,6 @@
    </head>
    
    <body>
-    <div class="position">
       <section id="wrapper">
         toBeChanged
       </section>
@@ -70,6 +63,5 @@
 
           toBeChanged3
       </svg>
-    </div>
    </body>
 </html>
