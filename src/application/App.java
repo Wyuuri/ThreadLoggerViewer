@@ -5,7 +5,6 @@ import java.io.File;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import main.backend.LogFilesReader;
@@ -13,13 +12,9 @@ import main.common.Constants;
 import main.frontend.UserInterface;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -66,17 +61,29 @@ public class App extends Application {
 	    stage.show();
 	}
 	 
+	 /**
+	  * Executes the back-end side and then the front-end side.
+	  * Loads the HTML to the WebEngine.
+	  * 
+	  * @param tracepath - The absolute path where all log files reside.
+	  */
 	 private static void loadHTML(String tracePath) {
 		 String startFile = tracePath + Constants.START_FILE;
 		 
 		// Backend
 		String firstProcess = String.valueOf(LogFilesReader.getLaunchProcess(startFile));
-		LogFilesReader.setTracePath(tracePath);
+		LogFilesReader.updateTracePath(tracePath);
 		LogFilesReader.readLineByLine(tracePath + "trace_" + firstProcess + ".log");
 		    
 		webEngine.loadContent(UserInterface.readHTMLFile_andBeautify(tracePath));
 	 }
 	 
+	 /**
+	  * Shows a dialog for the user to choose a file directory.
+	  * 
+	  * @param stage - The primary stage
+	  * @return The absolute path where all log files reside.
+	  */
 	 private String getTracePath(Stage stage) {
 		 DirectoryChooser directoryChooser = new DirectoryChooser();
 		 File selectedDirectory = directoryChooser.showDialog(stage);

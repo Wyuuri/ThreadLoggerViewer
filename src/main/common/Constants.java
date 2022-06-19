@@ -7,6 +7,7 @@ public class Constants {
 	public final static String START_FILE = "trace_result.log";
 	public final static String FILENAME_PREFIX = "trace_";
 	public final static String FILE_EXTENSION = ".log";
+	
 	public final static String HTML_FILEPATH = System.getProperty("user.dir") + File.separator + "resources" + File.separator + "view.html";
 	public final static String CSS_FILEPATH = "file:/" + System.getProperty("user.dir").replace("\\", "/") + "/resources/button.css"; 
 	public final static String LOGO_PATH = "file:/" + System.getProperty("user.dir").replace("\\", "/") + "/resources/icon.jpg";

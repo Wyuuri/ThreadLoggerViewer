@@ -16,20 +16,101 @@ import main.common.Constants;
 
 public class LogFilesReader {
 	
-	public static String tracePath;
+	private static String tracePath;
 	
-	// process number String --- list of messages (natural order keys)
 	private static Map<String,List<String>> sortedMessages = new TreeMap<>();
-	
-	// send msg number --- process number String
 	private static Map<Integer,String> sendMsg = new HashMap<>();
-	
-	// deliver msg number --- process number String
 	private static Map<Integer,String> deliverMsg = new HashMap<>();
-	
-	// receive msg number --- process number String
 	private static Map<Integer,String> receiveMsg = new HashMap<>();
 	
+	/**
+	 * @param tracepath - The absolute path where all log files reside.
+	 */
+	public static void updateTracePath(String tracepath) {
+		tracePath = tracepath;
+	}
+	
+	/**
+	 * Reads all log files recursively starting from the process' log file given. 
+	 * Every time a process spawns, this method is called and reads it.
+	 * 
+	 * Puts all send messages in the sendMsg HashMap
+	 * Puts all deliver messages in the deliverMsg HashMap
+	 * Puts all receive messages in the receiveMsg HashMap
+	 * Puts all messages in the sortedMessages TreeMap
+	 * 
+	 * @param path - The launch process' log file
+	 */
+	public static void readLineByLine(String path) {
+		String processNumber = LogUtils.getProcessNumber(path);
+		List<String> myMessages = new ArrayList<>();
+		
+		try {  
+			File file=new File(path);    //creates a new file instance  
+			FileReader fr=new FileReader(file);   //reads the file  
+			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
+			StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
+			
+			Pattern pattern;
+			Matcher matcher;
+			
+			String line;
+			int number;
+			String filepath;
+			while((line=br.readLine())!=null) {
+				
+				if(LogUtils.isSend(line)) {
+					pattern = Pattern.compile(Constants.SEND_REGEX);
+			        matcher = pattern.matcher(line);
+			        matcher.find();
+			        
+			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
+					sendMsg.put(number, processNumber);
+					myMessages.add("send "+ number);
+				}
+				else if(LogUtils.isDeliver(line)) {
+					pattern = Pattern.compile(Constants.DELIVER_REGEX);
+			        matcher = pattern.matcher(line);
+			        matcher.find();
+			        
+			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
+					deliverMsg.put(number, processNumber);
+					myMessages.add("deliver "+ number);
+				}
+				else if(LogUtils.isReceive(line)) {
+					pattern = Pattern.compile(Constants.RECEIVE_REGEX);
+			        matcher = pattern.matcher(line);
+			        matcher.find();
+			        
+			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
+					receiveMsg.put(number, processNumber);
+					myMessages.add("receive "+ number);
+				}
+				else if(LogUtils.isSpawn(line)) {
+					filepath = tracePath + Constants.FILENAME_PREFIX 
+							+ LogUtils.getProcessNumber(line) + Constants.FILE_EXTENSION;
+					
+					readLineByLine(filepath);
+				}
+				
+				sb.append(line);      //appends line to string buffer  
+				sb.append("\n");     //line feed   
+			}  
+			fr.close();    //closes the stream and release the resources  
+			System.out.println("Contents of File: ");  
+			System.out.println(sb.toString());   //returns a string that textually represents the object  
+		}  
+		catch(IOException e) {  
+			e.printStackTrace();
+		}
+		
+		sortedMessages.put(processNumber, myMessages);
+	}
+	
+	/**
+	 * @param path - The log file that contains the launch process number.
+	 * @return The launch process number.
+	 */
 	public static int getLaunchProcess(String path) {
 		int pidNum = 0;
 		
@@ -65,138 +146,35 @@ public class LogFilesReader {
 	}
 	
 	/**
-	 * @param Any path that contains the log filename
-	 * @return Number of the process associated to the log file
+	 * @return key: send message number
+	 * 		 value: process number (String) that contains this message
 	 */
-	public static String getProcessNumber(String path) {
-		Pattern pattern = Pattern.compile("(\\d+)");
-        Matcher matcher = pattern.matcher(path);
-        matcher.find();
-        
-        // Last number matched from path
-        return matcher.group(matcher.groupCount());
-	}
-	
-	public static boolean isSpawn(String line) {
-		return line.contains(Constants.SPAWN);
-	}
-	
-	public static boolean isSend(String line) {
-		return line.contains(Constants.SEND);
-	}
-	
-	public static boolean isReceive(String line) {
-		return line.contains(Constants.RECEIVE);
-	}
-	
-	public static boolean isDeliver(String line) {
-		return line.contains(Constants.DELIVER);
-	}
-	
-	public static void setTracePath(String tracepath) {
-		tracePath = tracepath;
-	}
-	
-	public static void readLineByLine(String path) {
-		String processNumber = getProcessNumber(path);
-		List<String> myMessages = new ArrayList<>();
-		
-		try {  
-			File file=new File(path);    //creates a new file instance  
-			FileReader fr=new FileReader(file);   //reads the file  
-			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
-			StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
-			
-			Pattern pattern;
-			Matcher matcher;
-			
-			String line;
-			int number;
-			String filepath;
-			while((line=br.readLine())!=null) {
-				
-				if(isSend(line)) {
-					pattern = Pattern.compile(Constants.SEND_REGEX);
-			        matcher = pattern.matcher(line);
-			        matcher.find();
-			        
-			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
-					sendMsg.put(number, processNumber);
-					myMessages.add("send "+ number);
-				}
-				else if(isDeliver(line)) {
-					pattern = Pattern.compile(Constants.DELIVER_REGEX);
-			        matcher = pattern.matcher(line);
-			        matcher.find();
-			        
-			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
-					deliverMsg.put(number, processNumber);
-					myMessages.add("deliver "+ number);
-				}
-				else if(isReceive(line)) {
-					pattern = Pattern.compile(Constants.RECEIVE_REGEX);
-			        matcher = pattern.matcher(line);
-			        matcher.find();
-			        
-			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
-					receiveMsg.put(number, processNumber);
-					myMessages.add("receive "+ number);
-				}
-				else if(isSpawn(line)) {
-					filepath = tracePath + Constants.FILENAME_PREFIX 
-							+ getProcessNumber(line) + Constants.FILE_EXTENSION;
-					
-					readLineByLine(filepath);
-				}
-				
-				sb.append(line);      //appends line to string buffer  
-				sb.append("\n");     //line feed   
-			}  
-			fr.close();    //closes the stream and release the resources  
-			System.out.println("Contents of File: ");  
-			System.out.println(sb.toString());   //returns a string that textually represents the object  
-		}  
-		catch(IOException e) {  
-			e.printStackTrace();
-		}
-		
-		sortedMessages.put(processNumber, myMessages);
-	}
-
-	public static List<String> getAllProcessesNumbers(String path) {
-		
-		//Creating a File object for directory
-	      File directoryPath = new File(path);
-	      
-		//List of all files and directories
-	      String contents[] = directoryPath.list();
-	      
-	    //List of processes numbers
-	      List<String> pids = new ArrayList<>();
-	    
-	    for(int i=0; i<contents.length && contents[i].endsWith(".log") && contents[i].matches(".*[0-9].*"); i++) {
-	    	pids.add(getProcessNumber(contents[i]));
-	    }
-	      
-	      return pids;
-	}
-	
-	public static int numberOfProcesses() {
-		List<String> processes = getAllProcessesNumbers(tracePath);
-		return processes.size();
-	}
-	
 	public static Map<Integer,String> getSendMsg( ) {
 		return sendMsg;
 	}
+	
+	/**
+	 * @return key: deliver message number
+	 * 		 value: process number (String) that contains this message
+	 */
 	
 	public static Map<Integer,String> getDeliverMsg( ) {
 		return deliverMsg;
 	}
 	
+	/**
+	 * @return key: receive message number
+	 * 		 value: process number (String) that contains this message
+	 */
+	
 	public static Map<Integer,String> getReceiveMsg( ) {
 		return receiveMsg;
 	}
+	
+	/**
+	 * @return key: process number (String) (natural order keys)
+	 * 		 value: List of messages of this process
+	 */
 
 	public static Map<String, List<String>> getSortedMessages() {
 		return sortedMessages;

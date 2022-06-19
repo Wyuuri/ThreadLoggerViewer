@@ -9,7 +9,7 @@ public class StyleUtils {
 	public final static int GAP_Y_COORDINATE = 30;
 	
 	public final static int STARTING_Y_TEXT_COORDINATE = 40;
-	public final static int TEXT_TO_THE_LEFT = 50; // It depend on the messages font size
+	public final static int TEXT_TO_THE_LEFT = 50; // It depends on the messages font size
 	
 	public final static int STARTING_X_DASHED_LINE = 20;
 	public final static int STARTING_Y_DASHED_LINE = 0;
