@@ -34,9 +34,8 @@ public class UserInterface {
 	public static String readHTMLFile_andBeautify(String tracePath) {
 		String res = "";
 		
-		try {  
-			URL url = UserInterface.class.getResource(Constants.HTML_FILENAME);
-			File file = new File(url.getPath());    //creates a new file instance  
+		try {
+			File file = new File(Constants.HTML_FILEPATH);    //creates a new file instance  
 			FileReader fr = new FileReader(file);   //reads the file  
 			BufferedReader br = new BufferedReader(fr);  //creates a buffering character input stream  
 			StringBuffer sb = new StringBuffer();    //constructs a string buffer with no characters  
@@ -56,14 +55,13 @@ public class UserInterface {
 			String line;
 			while((line=br.readLine())!=null) {
 				if(line.trim().equals("toBeChanged")) {
-					for(String pid: pids) {
-						processes += "<div class=\"process-style\">" + pid + "</div>";
-					}
+					processes = drawProcesses(pids);
 					sb.append(processes);
 					continue;
 				} else if(line.trim().equals("toBeChanged2")) {
-					svgHeader = "<svg width=\""+ svg_width +"\" height=\""+ svg_height +"\" style=\"margin-left:30px;\">";
+					svgHeader = drawSVGHeader(svg_width, svg_height);
 					sb.append(svgHeader);
+					
 					historyLines = drawHistoryLines(pids.size());
 					sb.append(historyLines);
 					continue;
@@ -82,6 +80,18 @@ public class UserInterface {
 			e.printStackTrace();
 		}
 		
+		return res;
+	}
+	
+	public static String drawSVGHeader(int svg_width, int svg_height) {
+		return "<svg class=\"svg-style\" width=\""+ svg_width +"\" height=\""+ svg_height +"\" >\r\n";
+	}
+	
+	public static String drawProcesses(List<String> pids) {
+		String res = "";
+		for(String pid: pids) {
+			res += "<div class=\"process-style\">" + pid + "</div>\r\n";
+		}
 		return res;
 	}
 
@@ -309,7 +319,7 @@ public class UserInterface {
 	 * @return The HTML elements in raw string, draws an arrow from the sender to the receiver process
 	 */
 	public static String drawArrow(int x1, int y1, int x2, int y2) {
-		return "<line class=\"arrow\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />";
+		return "<line class=\"arrow\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />\r\n";
 	}
 	
 	/**

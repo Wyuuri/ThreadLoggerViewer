@@ -1,0 +1,75 @@
+<html>
+   <head>
+    <style>
+        #wrapper {
+          white-space: nowrap;
+          overflow-x:hidden;
+        }
+
+        div.position{
+          position: top;
+          border-style: dotted;
+          border-color:darkolivegreen;
+        }
+
+        .process-style {
+         border-style:double;
+         border-color:#11a725;
+         width:100px;
+         padding-top:5px;
+         padding-bottom:5px;
+         text-align:center;
+         margin:15px;
+         margin-bottom:0px;
+         float:left; /* Not supported by JEditorPane */
+        }
+
+        .svg-style {
+          margin-left: 47.5px;
+        }
+        
+        rect.dash {
+         fill:rgb(200, 233, 181); 
+         stroke:darkgreen; 
+         stroke-width:1;
+         width:20;
+         stroke-dasharray:10 3; /* dashed size and gap size */
+        }
+        line.dash {
+          stroke:rgb(20, 121, 0);
+          stroke-width:2;
+        }
+        line.arrow {
+          stroke:black;
+          stroke-width:2;
+        }
+        text.msg {
+          font-style: oblique;
+          font-size: 14px;
+          fill:black;
+        }
+    </style>
+    <title>Thread Logger Viewer</title>
+   </head>
+   
+   <body>
+    <div class="position">
+      <section id="wrapper">
+        toBeChanged
+      </section>
+
+      <!--svg width="100%" height="2000" style="margin-left:30px;"-->
+          toBeChanged2
+          
+          <defs>
+            <marker id="arrowhead" markerWidth="5" markerHeight="3" 
+              refX="0" refY="1.5" orient="auto">
+              <polygon points="0,0 5,1.5 0,3" />
+            </marker>
+          </defs>
+
+          toBeChanged3
+      </svg>
+    </div>
+   </body>
+</html>

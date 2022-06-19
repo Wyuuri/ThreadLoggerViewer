@@ -13,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import main.common.Constants;
-import main.common.StyleUtils;
 
 public class LogFilesReader {
 	

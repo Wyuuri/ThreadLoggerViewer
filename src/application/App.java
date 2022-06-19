@@ -42,7 +42,7 @@ public class App extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				tracePath = getTracePath(stage);
-				loadHTML(tracePath);
+				if(tracePath != null) { loadHTML(tracePath); }
 			}
 		});
 
@@ -53,14 +53,15 @@ public class App extends Application {
 	    VBox.setVgrow(webView, Priority.ALWAYS);
 	    vBox.getChildren().addAll(toolBar, webView);
 	    
+	    
 	    // Default path for testing
 	    tracePath = "D:\\trace\\";
 		loadHTML(tracePath);
 	    
 	    Scene scene = new Scene(vBox,800,800);
-	    scene.getStylesheets().add(getClass().getResource("/main/frontend/button.css").toExternalForm());
+	    scene.getStylesheets().add(Constants.CSS_FILEPATH);
 	    stage.setScene(scene);
-	    stage.getIcons().add(new Image(getClass().getResourceAsStream("/main/frontend/icon.jpg")));
+	    stage.getIcons().add(new Image(Constants.LOGO_PATH));
 	    stage.setTitle("Thread Logger Viewer");
 	    stage.show();
 	}
@@ -82,8 +83,8 @@ public class App extends Application {
 
 		if(selectedDirectory == null){
 			System.out.println("No directory selected");
-			System.exit(0);
+			return null;
 		}
-		return selectedDirectory.getAbsolutePath() + "\\";
+		return selectedDirectory.getAbsolutePath() + File.separator;
 	 }
 }
