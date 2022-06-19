@@ -48,11 +48,6 @@ public class App extends Application {
 	    VBox.setVgrow(webView, Priority.ALWAYS);
 	    vBox.getChildren().addAll(toolBar, webView);
 	    
-	    
-	    // Default path for testing
-	    tracePath = "D:\\trace\\";
-		loadHTML(tracePath);
-	    
 	    Scene scene = new Scene(vBox);
 	    scene.getStylesheets().add(Constants.CSS_FILEPATH);
 	    stage.setScene(scene);

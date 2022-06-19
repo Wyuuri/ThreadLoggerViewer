@@ -21,7 +21,7 @@ public class UserInterface {
 	 * @return The HTML raw string to be displayed.
 	 */
 	public static String readHTMLFile_andBeautify(String tracePath) {
-		String res = "";
+		String html = "";
 		
 		try {
 			File file = new File(Constants.HTML_FILEPATH);    //creates a new file instance  
@@ -62,13 +62,13 @@ public class UserInterface {
 				sb.append(line);
 			}  
 			fr.close();
-			res = sb.toString();
+			html = sb.toString();
 			//System.out.println(res);  
 		}  
 		catch(IOException e) {  
 			e.printStackTrace();
 		}
 		
-		return res;
+		return html;
 	}
 }
