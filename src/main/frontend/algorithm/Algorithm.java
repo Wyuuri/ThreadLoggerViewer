@@ -65,8 +65,6 @@ public class Algorithm {
 	/**
 	 * The variable maxY is calculated in this method.
 	 * 
-	 * This method also calls another private method to print yCoordinates content.
-	 * 
 	 * @param pids - All processes numbers
 	 * @return yCoordinates
 	 */
@@ -173,7 +171,6 @@ public class Algorithm {
 	          cont++;
 	        }
 	        if(cont == pids.size()) {
-	        	printYcoordinates(); 
 	        	return yCoordinates;
 	        }
 			
@@ -181,12 +178,24 @@ public class Algorithm {
 	}
 
 	/**
+	 * Print xCoordinates content.
+	 */
+	public static void printXcoordinates() {
+		System.out.println("X COORDINATES:");
+		for (String process: xCoordinates.keySet()) {
+		    String messagesY = xCoordinates.get(process).toString();
+		    System.out.println("Process " + process + ": " + messagesY);
+		}
+	}
+	
+	/**
 	 * Print yCoordinates content.
 	 */
-	private static void printYcoordinates() {
+	public static void printYcoordinates() {
+		System.out.println("Y COORDINATES:");
 		for (String process: yCoordinates.keySet()) {
 		    String messagesY = yCoordinates.get(process).toString();
-		    System.out.println(process + " " + messagesY);
+		    System.out.println("Process " + process + ": " + messagesY);
 		}
 	}
 }

@@ -46,10 +46,10 @@ public class LogFilesReader {
 		List<String> myMessages = new ArrayList<>();
 		
 		try {  
-			File file=new File(path);    //creates a new file instance  
+			File file=new File(path); 
 			FileReader fr=new FileReader(file);   //reads the file  
 			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
-			StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
+			// StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
 			
 			Pattern pattern;
 			Matcher matcher;
@@ -93,12 +93,13 @@ public class LogFilesReader {
 					readLineByLine(filepath);
 				}
 				
-				sb.append(line);      //appends line to string buffer  
-				sb.append("\n");     //line feed   
+				// Optional: Print each log file content
+				/* sb.append(line);
+				   sb.append("\n"); */
 			}  
 			fr.close();    //closes the stream and release the resources  
-			System.out.println("Contents of File: ");  
-			System.out.println(sb.toString());   //returns a string that textually represents the object  
+			/* System.out.println("Contents of File: ");  
+			   System.out.println(sb.toString());  */  
 		}  
 		catch(IOException e) {  
 			e.printStackTrace();
@@ -115,10 +116,9 @@ public class LogFilesReader {
 		int pidNum = 0;
 		
 		try {  
-			File file=new File(path);    //creates a new file instance  
+			File file=new File(path); 
 			FileReader fr = new FileReader(file);   //reads the file  
-			BufferedReader br = new BufferedReader(fr);  //creates a buffering character input stream  
-			StringBuffer sb = new StringBuffer();    //constructs a string buffer with no characters  
+			BufferedReader br = new BufferedReader(fr);  //creates a buffering character input stream 
 			
 			String line;  
 			while((line=br.readLine())!=null) {
@@ -126,18 +126,17 @@ public class LogFilesReader {
 				if (line.contains("pid")) {
 					Pattern pattern = Pattern.compile("(\\d+)");
 			        Matcher matcher = pattern.matcher(line);
-
 			        matcher.find();
+			        
 			        pidNum = Integer.valueOf(line.substring(matcher.start(), matcher.end()));
-					sb.append(pidNum);      //appends line to string buffer  
-					sb.append("\n");     //line feed 
 					break;
 				}
 				  
 			}  
-			fr.close();    //closes the stream and release the resources  
-			System.out.println("Launching process: ");  
-			System.out.println(sb.toString());   //returns a string that textually represents the object  
+			fr.close();
+			
+			// Optional: Print the launch process
+			System.out.println("LAUNCH PROCESS: " + pidNum + "\n");
 		}  
 		catch(IOException e) {  
 			e.printStackTrace();

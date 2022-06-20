@@ -17,7 +17,7 @@ public class UserInterface {
 	private static int dashed_rectangle_height;
 	
 	/**
-	 * @param tracepath - The absolute path where all log files reside.
+	 * @param tracePath - The absolute path where all log files reside.
 	 * @return The HTML raw string to be displayed.
 	 */
 	public static String readHTMLFile_andBeautify(String tracePath) {
@@ -37,11 +37,13 @@ public class UserInterface {
 			int svg_width = Algorithm.getMaxX() + StyleUtils.GAP_X_COORDINATE + 100;
 			int svg_height = dashed_rectangle_height + 100;
 			
-			String processes = "";
-			String historyLines = "";
-			String msgLines = "";
-			String svgHeader = "";
+			String processes = "", 
+				historyLines = "",
+				msgLines = "", 
+				svgHeader = "";
+			
 			String line;
+			
 			while((line=br.readLine())!=null) {
 				if(line.trim().equals("toBeChanged")) {
 					processes = Painter.drawProcesses(pids);
@@ -63,7 +65,11 @@ public class UserInterface {
 			}  
 			fr.close();
 			html = sb.toString();
-			//System.out.println(res);  
+			
+			// Optional: Print processes and their messages X and Y coordinates
+			Algorithm.printXcoordinates();
+			System.out.println();
+			Algorithm.printYcoordinates();
 		}  
 		catch(IOException e) {  
 			e.printStackTrace();

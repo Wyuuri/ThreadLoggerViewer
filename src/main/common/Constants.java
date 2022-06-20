@@ -17,8 +17,8 @@ public class Constants {
 	public final static String SEND = "send";
 	public final static String DELIVER = "deliver";
 	public final static String RECEIVE = "receive";
-	public final static String SEND_REGEX = "[{](\\s*)send,";
-	public final static String DELIVER_REGEX = "[{](\\s*)deliver,";
-	public final static String RECEIVE_REGEX = "[{](\\s*)(\\S*)receive(\\s*)(\\S*),";
-	public final static String SPAWNED_REGEX = "[{](\\S*)spawn(\\S*),[{](\\D+),";
+	public final static String SEND_REGEX = "[{](\\s*)(\\S*)send(\\S*)(\\s*),(\\s*)";
+	public final static String DELIVER_REGEX = "[{](\\s*)(\\S*)deliver(\\S*)(\\s*),(\\s*)";
+	public final static String RECEIVE_REGEX = "[{](\\s*)(\\S*)receive(\\S*)(\\s*),(\\s*)";
+	public final static String SPAWNED_REGEX = "[{](\\s*)(\\S*)spawn(\\S*)(\\s*),(\\s*)[{](\\s*)(\\D+)(\\s*),(\\s*)";
 }
