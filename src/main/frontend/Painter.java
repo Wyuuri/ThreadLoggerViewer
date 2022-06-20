@@ -132,8 +132,10 @@ public class Painter {
 	public static String drawReceivePoint(int x, int y, String msg) {
 		String res = "";
 		int xText = x + 5, 
-			yText = y - 10; 
-		res = "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x +"\" cy=\""+ y +"\" r=\"5\"></circle>"
+			yText = y - 10,
+			radius = StyleUtils.RECEIVE_CIRCLE_RADIUS;
+		
+		res = "<circle style=\"fill:none;stroke:#010101;stroke-width:1.6871;stroke-miterlimit:10;\" cx=\""+ x +"\" cy=\""+ y +"\" r=\""+ radius +"\"></circle>"
 			+ "<text class=\"msg\" x=\""+ xText +"\" y=\""+ yText +"\" text-anchor=\"start\" dy=\"1px\">" + msg + "</text>";
 		return res;
 	}

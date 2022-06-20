@@ -19,4 +19,5 @@ public class StyleUtils {
 	public final static int DASHED_RECTANGLE_X_CORNER_ROUND = 5;
 	public final static int DASHED_RECTANGLE_Y_CORNER_ROUND = 5;
 	
+	public final static int RECEIVE_CIRCLE_RADIUS = 4;
 }
