@@ -44,11 +44,11 @@ public class Painter {
 	 * @return The HTML elements in raw string, draws {size} dashed lines and rectangles.
 	 */
 	public static String drawHistoryLines(int size, int height) {
-		int x = StyleUtils.STARTING_X_DASHED_LINE;
-		int y1 = StyleUtils.STARTING_Y_DASHED_LINE;
-		int y2 = StyleUtils.STARTING_Y_DASHED_RECTANGLE; // when process history starts, increase 30 by 30
-		int rectX = StyleUtils.STARTING_X_DASHED_RECTANGLE;
-		int rx = StyleUtils.DASHED_RECTANGLE_X_CORNER_ROUND, 
+		int x = StyleUtils.STARTING_X_DASHED_LINE,
+			y1 = StyleUtils.STARTING_Y_DASHED_LINE,
+			y2 = StyleUtils.STARTING_Y_DASHED_RECTANGLE,
+			rectX = StyleUtils.STARTING_X_DASHED_RECTANGLE,
+			rx = StyleUtils.DASHED_RECTANGLE_X_CORNER_ROUND, 
 			ry = StyleUtils.DASHED_RECTANGLE_Y_CORNER_ROUND;
 		
 		String res = "";
