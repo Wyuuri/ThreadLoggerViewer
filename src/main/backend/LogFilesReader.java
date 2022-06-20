@@ -18,6 +18,10 @@ public class LogFilesReader {
 	
 	private static String tracePath;
 	
+	private static final Pattern sendPattern = Pattern.compile(Constants.SEND_REGEX);
+	private static final Pattern deliverPattern = Pattern.compile(Constants.DELIVER_REGEX);
+	private static final Pattern receivePattern = Pattern.compile(Constants.RECEIVE_REGEX);
+	
 	private static Map<String,List<String>> sortedMessages = new TreeMap<>();
 	private static Map<Integer,String> sendMsg = new HashMap<>();
 	private static Map<Integer,String> deliverMsg = new HashMap<>();
@@ -51,7 +55,6 @@ public class LogFilesReader {
 			BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream  
 			// StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters  
 			
-			Pattern pattern;
 			Matcher matcher;
 			
 			String line;
@@ -60,31 +63,28 @@ public class LogFilesReader {
 			while((line=br.readLine())!=null) {
 				
 				if(LogUtils.isSend(line)) {
-					pattern = Pattern.compile(Constants.SEND_REGEX);
-			        matcher = pattern.matcher(line);
+			        matcher = sendPattern.matcher(line);
 			        matcher.find();
 			        
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					sendMsg.put(number, processNumber);
-					myMessages.add("send "+ number);
+					myMessages.add(Constants.SEND +" "+ number);
 				}
 				else if(LogUtils.isDeliver(line)) {
-					pattern = Pattern.compile(Constants.DELIVER_REGEX);
-			        matcher = pattern.matcher(line);
+			        matcher = deliverPattern.matcher(line);
 			        matcher.find();
 			        
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					deliverMsg.put(number, processNumber);
-					myMessages.add("deliver "+ number);
+					myMessages.add(Constants.DELIVER +" "+ number);
 				}
 				else if(LogUtils.isReceive(line)) {
-					pattern = Pattern.compile(Constants.RECEIVE_REGEX);
-			        matcher = pattern.matcher(line);
+			        matcher = receivePattern.matcher(line);
 			        matcher.find();
 			        
 			        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
 					receiveMsg.put(number, processNumber);
-					myMessages.add("receive "+ number);
+					myMessages.add(Constants.RECEIVE+" "+ number);
 				}
 				else if(LogUtils.isSpawn(line)) {
 					filepath = tracePath + Constants.FILENAME_PREFIX 

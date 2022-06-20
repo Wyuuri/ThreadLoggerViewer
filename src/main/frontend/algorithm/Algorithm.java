@@ -90,20 +90,20 @@ public class Algorithm {
 				
 				message = messages.get(msgPointer);
 				
-				// Si se sabe que es un deliver esperando un send, no hace falta ejecutar más instrucciones
+				// Si se sabe que es un "deliver" esperando un "send", no hace falta ejecutar más instrucciones
 	            if(waitingProcess.get(process)) continue; //siguiente proceso
 	            
-	            // En caso de que se detecte un deliver, se espera a encontrar el send respectivo
+	            // En caso de que se detecte un "deliver", se espera a encontrar el "send" respectivo
 	            if(message.contains(Constants.DELIVER) && !waitingProcess.get(process)) {
 	            	waitingProcess.put(process, true);
 	                continue; // siguiente proceso
 	            }
-	            // En caso de que se detecte un send, hay que revisar todos los deliver en espera
+	            // En caso de que se detecte un "send", hay que revisar todos los "deliver" en espera
 	            // y comprobar si sus codigos son iguales
 	            else if(message.contains("send")) {
 	            	senderProcess = process; // Esto es solo para que se entienda mejor
 	                
-	            	// Para cada posible proceso que contenga un deliver:
+	            	// Para cada posible proceso que contenga un "deliver":
 	                for(String deliverProcess : pids) {
 	                	messages2 = sortedMessages.get(deliverProcess);
 	                	msgPointer2 = processMsgPointer.get(deliverProcess);
@@ -112,9 +112,9 @@ public class Algorithm {
 
 	                   message2 = messages2.get(msgPointer2);
 
-	                   // Si el proceso que contiene send es diferente al que posiblemente contiene un deliver,
-	                   // y resulta que si contiene un deliver (tiene waiting_process a True) y sus codigos son el mismo
-	                   // entonces se debe calcular sus coordenadas Y y añadir ambos a y_axis_process
+	                   // Si el proceso que contiene "send" es diferente al que posiblemente contiene un "deliver",
+	                   // y resulta que si contiene un "deliver" (tiene waitingProcess a True) y sus codigos son el mismo
+	                   // entonces se debe calcular sus coordenadas Y y añadir ambos a yCoordinates
 	                   if (senderProcess != deliverProcess
 	                      && waitingProcess.get(deliverProcess)
 	                      && getMsgNumber(message2) == getMsgNumber(message)) {
@@ -138,8 +138,8 @@ public class Algorithm {
 	                      lastSendY = y;
 	                      if(maxY < y) { maxY = y; }
 
-	                       // Puesto que el deliver y el send ya se han tenido en cuenta, se continua con
-	                       // los siuientes eventos sus respectivos procesos 
+	                       // Dado que el "deliver" y el "send" ya se han tenido en cuenta, se continua con
+	                       // los siguientes eventos sus respectivos procesos 
 	                       waitingProcess.put(deliverProcess, false);
 	                       processMsgPointer.put(senderProcess, processMsgPointer.get(senderProcess)+1);
 	                       processMsgPointer.put(deliverProcess, processMsgPointer.get(deliverProcess)+1);
@@ -148,7 +148,7 @@ public class Algorithm {
 
 	                }
 	            }
-	            // Para el caso del receive solo se debe calcular la coordenada Y y añadirlo a y_axis_process
+	            // Para el caso del "receive" solo se debe calcular la coordenada Y y añadirlo a yCoordinates
 	            else if(message.contains("receive")) {
 	                    y = lastY.get(process) + StyleUtils.GAP_Y_COORDINATE;
 	                    
@@ -163,7 +163,7 @@ public class Algorithm {
 	            }
 			}
 	            
-	        // Por ultimo para detener el algoritmo se comprueba que se haya calculado la coordenada Y
+	        // Por ultimo, para detener el algoritmo se comprueba que se haya calculado la coordenada Y
 	        // de todos los eventos
 	        cont = 0;
 	        for(String proceso : pids) {
