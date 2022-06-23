@@ -11,12 +11,12 @@ import main.common.Constants;
 public class LogUtils {
 	
 	/**
-	 * @param tracepath - The absolute path where all log files reside.
+	 * @param tracePath - The absolute path where all log files reside.
 	 */
-	public static List<String> getAllProcessesNumbers(String tracepath) {
+	public static List<String> getAllProcessesNumbers(String tracePath) {
 		
 		//Creating a File object for directory
-	      File directoryPath = new File(tracepath);
+	      File directoryPath = new File(tracePath);
 	      
 		//List of all files and directories
 	      String contents[] = directoryPath.list();

@@ -1,6 +1,7 @@
 package application;
 
 import java.io.File;
+import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -11,6 +12,8 @@ import main.backend.LogFilesReader;
 import main.common.Constants;
 import main.frontend.UserInterface;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
@@ -66,11 +69,27 @@ public class App extends Application {
 		 String startFile = tracePath + Constants.START_FILE;
 		 
 		// Backend
-		String firstProcess = String.valueOf(LogFilesReader.getLaunchProcess(startFile));
-		LogFilesReader.updateTracePath(tracePath);
-		LogFilesReader.readLineByLine(tracePath + "trace_" + firstProcess + ".log");
-		    
-		webEngine.loadContent(UserInterface.readHTMLFile_andBeautify(tracePath));
+		String firstProcess;
+		try {
+			firstProcess = String.valueOf(LogFilesReader.getLaunchProcess(startFile));
+			LogFilesReader.updateTracePath(tracePath);
+			LogFilesReader.readLineByLine(tracePath + "trace_" + firstProcess + ".log");
+			
+			try {
+				webEngine.loadContent(UserInterface.readHTMLFile_andBeautify(tracePath));
+		
+			} catch (IOException e) {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setHeaderText("Error");
+				alert.setContentText("Content could not be loaded.");
+				alert.showAndWait();
+			}
+		} catch (NumberFormatException | IOException e) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setHeaderText("Error");
+			alert.setContentText("The selected directory does not contain all required log files.");
+			alert.showAndWait();
+		}
 	 }
 	 
 	 /**
@@ -82,11 +101,11 @@ public class App extends Application {
 	 private String getTracePath(Stage stage) {
 		 DirectoryChooser directoryChooser = new DirectoryChooser();
 		 File selectedDirectory = directoryChooser.showDialog(stage);
-
-		if(selectedDirectory == null){
+		
+		 if(selectedDirectory == null){
 			System.out.println("No directory selected");
 			return null;
-		}
-		return selectedDirectory.getAbsolutePath() + File.separator;
+		 }
+		 return selectedDirectory.getAbsolutePath() + File.separator;
 	 }
 }
