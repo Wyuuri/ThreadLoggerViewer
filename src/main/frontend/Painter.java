@@ -82,7 +82,7 @@ public class Painter {
 				for(String msg : coordinates.get(i).keySet()) {
 					if(msg.contains(Constants.SEND)) {
 						msgNumber = Algorithm.getMsgNumber(msg);
-						deliverMessage = Constants.DELIVER+" "+msgNumber;
+						deliverMessage = Constants.DELIVERY+" "+msgNumber;
 						
 						senderProcess = sendMsg.get(msgNumber);
 						receiverProcess = deliverMsg.get(msgNumber);
