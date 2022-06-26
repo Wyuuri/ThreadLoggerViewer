@@ -53,6 +53,8 @@ public class Algorithm {
 	 * @return xCoordinates
 	 */
 	public static Map<String, Integer> fillXCoordinates(List<String> pids) {
+		xCoordinates.clear();
+		
 		int x = StyleUtils.STARTING_X_COORDINATE;
 		for(String pid : pids) {
 			xCoordinates.put(pid, x);
@@ -67,8 +69,9 @@ public class Algorithm {
 	 * 
 	 * @param pids - All processes numbers
 	 * @return yCoordinates
+	 * @throws Exception 
 	 */
-	public static Map<String, List<Map<String, Integer>>> fillYCoordinates(List<String> pids) {
+	public static Map<String, List<Map<String, Integer>>> fillYCoordinates(List<String> pids) throws Exception {
 		Map<String, Integer> lastY = Initializer.initialize_lastYList(pids);
 		Map<String, Boolean> waitingProcess = Initializer.initialize_WaitingProcessList(pids);
 		Map<String, Integer> processMsgPointer = Initializer.initialize_MsgPointerList(pids);
@@ -79,92 +82,144 @@ public class Algorithm {
 		String message, message2;
 		String senderProcess;
 		int y, cont, lastSendY = StyleUtils.STARTING_Y_COORDINATE;
+		int loop_count = 0;
 		
 		while(true) {
 			for(String process : pids) {
+				// In the worst case, iterations will be made equal to the number of processes squared 
+				// without finding the right deliver of any send message
+				if (++loop_count > pids.size()*pids.size()) { throw new Exception("Too many iterations, possible deadlock?"); }
+				
 				messages = sortedMessages.get(process);
 				msgPointer = processMsgPointer.get(process);
 				
-				// Evitar un IndexOutOfBounds
+				// Avoid IndexOutOfBounds
 				if(msgPointer >= messages.size()) continue;
 				
 				message = messages.get(msgPointer);
 				
-				// Si se sabe que es un "deliver" esperando un "send", no hace falta ejecutar más instrucciones
-	            if(waitingProcess.get(process)) continue; //siguiente proceso
+				// If it is known that it is a "deliver" waiting for a "send", there is no need to execute more instructions
+	            if(waitingProcess.get(process)) continue; // next process
 	            
-	            // En caso de que se detecte un "deliver", se espera a encontrar el "send" respectivo
+	            //In case a "deliver" is detected, it will wait to find the respective "send"
 	            if(message.contains(Constants.DELIVER) && !waitingProcess.get(process)) {
 	            	waitingProcess.put(process, true);
-	                continue; // siguiente proceso
+	                continue; // next process
 	            }
-	            // En caso de que se detecte un "send", hay que revisar todos los "deliver" en espera
-	            // y comprobar si sus codigos son iguales
-	            else if(message.contains("send")) {
-	            	senderProcess = process; // Esto es solo para que se entienda mejor
+	            // In case a "send" is detected, it has to check all the "deliver" to see if their codes are the same
+	            else if(message.contains(Constants.SEND)) {
+	            	senderProcess = process; // Just to make it more clear
 	                
-	            	// Para cada posible proceso que contenga un "deliver":
+	            	// For each process that may contain a "deliver":
 	                for(String deliverProcess : pids) {
 	                	messages2 = sortedMessages.get(deliverProcess);
-	                	msgPointer2 = processMsgPointer.get(deliverProcess);
-	                   // Evitar un IndexOutOfBounds
-	                   if(msgPointer2 >= messages2.size()) continue;
+	                	
+	                	// If the processes are the same it can mean that it is making a "send" on itself.
+	                    if (senderProcess.equals(deliverProcess)) {
+	                    	// Bypassing send message
+	                    	msgPointer2 = processMsgPointer.get(senderProcess) + 1;
+	                    	// Avoid IndexOutOfBounds
+	                    	if(msgPointer2 >= messages2.size()) continue;
+	                    	message2 = messages2.get(msgPointer2);
+	                    	
+	                    	// It is making a "send" on itself only if msgNumber are the same
+		                    if (getMsgNumber(message2).intValue() == getMsgNumber(message).intValue()) {
+		                    	loop_count = 0; 
+		                	    // Y coordinate calculation (send)
+		                	    y = lastSendY 
+		                	    		+ StyleUtils.GAP_Y_COORDINATE;
+								
+		                	    Map<String, Integer> pos = new HashMap<>();
+		                	    pos.put(message, y);
+								  
+		                	    yCoordinates.get(senderProcess).add(pos); 
+		                	    lastY.put(senderProcess, y);
+								  
+		                	    // Y coordinate recalculation (deliver)
+		                	    y += StyleUtils.GAP_Y_COORDINATE;
+								  
+		                	    Map<String, Integer> pos2 = new HashMap<>();
+		                	    pos2.put(message2, y);
+								
+		                	    yCoordinates.get(deliverProcess).add(pos2);
+		                	    lastY.put(deliverProcess, y);
+								  
+		                	    lastSendY = y;
+		                	    if(maxY < y) { maxY = y; }
+		                	    // Since the "deliver" and the "send" have already been taken into account, 
+		                	    // the following events of their respective processes are continued.
+		                	    waitingProcess.put(deliverProcess, false);
+		                	    processMsgPointer.put(senderProcess, processMsgPointer.get(senderProcess)+1);
+		                	    processMsgPointer.put(deliverProcess, processMsgPointer.get(deliverProcess)+1);
+		                	    break;
+		                   }
+	                	   
+	                   }
+	                   // Not the same process
+	                   else {
 
-	                   message2 = messages2.get(msgPointer2);
+		                	msgPointer2 = processMsgPointer.get(deliverProcess);
+		                   // Avoid IndexOutOfBounds
+		                   if(msgPointer2 >= messages2.size()) continue;
 
-	                   // Si el proceso que contiene "send" es diferente al que posiblemente contiene un "deliver",
-	                   // y resulta que si contiene un "deliver" (tiene waitingProcess a True) y sus codigos son el mismo
-	                   // entonces se debe calcular sus coordenadas Y y añadir ambos a yCoordinates
-	                   if (senderProcess != deliverProcess
-	                      && waitingProcess.get(deliverProcess)
-	                      && getMsgNumber(message2) == getMsgNumber(message)) {
-	                            
-	                      // Calculo de coordenada Y
-	                      y = lastSendY 
-	                          + StyleUtils.GAP_Y_COORDINATE;
+		                   message2 = messages2.get(msgPointer2);
+	                   
+		                   // If the process that contains "send" is different from the one that possibly contains a "deliver", 
+		                   // and it turns out that if it contains a "deliver" (it has waitingProcess to True) and its codes are the same,
+		                   // then it must calculate its Y coordinates and add both to yCoordinates
+		                   if (!senderProcess.equals(deliverProcess)
+		                      && waitingProcess.get(deliverProcess)
+		                      && getMsgNumber(message2) == getMsgNumber(message)) {
 
-	                      Map<String, Integer> pos = new HashMap<>();
-	                      pos.put(message, y);
-	                      
-	                      yCoordinates.get(senderProcess).add(pos); 
-	                      lastY.put(senderProcess, y);
-	                      
-	                      Map<String, Integer> pos2 = new HashMap<>();
-	                      pos2.put(message2, y);
-
-	                      yCoordinates.get(deliverProcess).add(pos2);
-	                      lastY.put(deliverProcess, y);
-	                      
-	                      lastSendY = y;
-	                      if(maxY < y) { maxY = y; }
-
-	                       // Dado que el "deliver" y el "send" ya se han tenido en cuenta, se continua con
-	                       // los siguientes eventos sus respectivos procesos 
-	                       waitingProcess.put(deliverProcess, false);
-	                       processMsgPointer.put(senderProcess, processMsgPointer.get(senderProcess)+1);
-	                       processMsgPointer.put(deliverProcess, processMsgPointer.get(deliverProcess)+1);
-	                       break;
-	                     }
-
+		                	  loop_count = 0; 
+		                	  // Y coordinate calculation
+		                      y = lastSendY 
+		                          + StyleUtils.GAP_Y_COORDINATE;
+	
+		                      Map<String, Integer> pos = new HashMap<>();
+		                      pos.put(message, y);
+		                      
+		                      yCoordinates.get(senderProcess).add(pos); 
+		                      lastY.put(senderProcess, y);
+		                      
+		                      Map<String, Integer> pos2 = new HashMap<>();
+		                      pos2.put(message2, y);
+	
+		                      yCoordinates.get(deliverProcess).add(pos2);
+		                      lastY.put(deliverProcess, y);
+		                      
+		                      lastSendY = y;
+		                      if(maxY < y) { maxY = y; }
+	
+		                      // Since the "deliver" and the "send" have already been taken into account, 
+		                	  // the following events of their respective processes are continued.
+		                      waitingProcess.put(deliverProcess, false);
+		                      processMsgPointer.put(senderProcess, processMsgPointer.get(senderProcess)+1);
+		                      processMsgPointer.put(deliverProcess, processMsgPointer.get(deliverProcess)+1);
+		                      break;
+		                   }
+	                   }
 	                }
 	            }
-	            // Para el caso del "receive" solo se debe calcular la coordenada Y y añadirlo a yCoordinates
+	            // In case of "receive" it just have to calculate the Y coordinate and add it to yCoordinates
 	            else if(message.contains("receive")) {
-	                    y = lastY.get(process) + StyleUtils.GAP_Y_COORDINATE;
+	            	loop_count = 0;
+             	   		
+	            	y = lastY.get(process) + StyleUtils.GAP_Y_COORDINATE;
 	                    
-	                    Map<String, Integer> pos = new HashMap<>();
-	                    pos.put(message, y);
+	            	Map<String, Integer> pos = new HashMap<>();
+	            	pos.put(message, y);
 	                    
-	                    lastSendY = y;
+	            	lastSendY = y;
 	                    
-	                    yCoordinates.get(process).add(pos);
-	                    lastY.put(process, y);
-	                    processMsgPointer.put(process, processMsgPointer.get(process)+1);
+                    yCoordinates.get(process).add(pos);
+                    lastY.put(process, y);
+                    processMsgPointer.put(process, processMsgPointer.get(process)+1);
 	            }
 			}
 	            
-	        // Por ultimo, para detener el algoritmo se comprueba que se haya calculado la coordenada Y
-	        // de todos los eventos
+	        // At last, to stop the algorithm, verify that the y-coordinates
+			// of all events have been calculated
 	        cont = 0;
 	        for(String proceso : pids) {
 	          if(processMsgPointer.get(proceso) != sortedMessages.get(proceso).size()) break;

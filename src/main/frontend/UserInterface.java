@@ -21,7 +21,7 @@ public class UserInterface {
 	 * @return The HTML raw string to be displayed.
 	 * @throws IOException 
 	 */
-	public static String readHTMLFile_andBeautify(String tracePath) throws IOException {
+	public static String readHTMLFile_andBeautify(String tracePath) throws IOException, Exception {
 		String html = "";
 		
 		File file = new File(Constants.HTML_FILEPATH);    //creates a new file instance  

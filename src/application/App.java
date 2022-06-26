@@ -73,15 +73,20 @@ public class App extends Application {
 		try {
 			firstProcess = String.valueOf(LogFilesReader.getLaunchProcess(startFile));
 			LogFilesReader.updateTracePath(tracePath);
+			LogFilesReader.cleanMaps();
 			LogFilesReader.readLineByLine(tracePath + "trace_" + firstProcess + ".log");
 			
 			try {
 				webEngine.loadContent(UserInterface.readHTMLFile_andBeautify(tracePath));
-		
 			} catch (IOException e) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setHeaderText("Error");
 				alert.setContentText("Content could not be loaded.");
+				alert.showAndWait();
+			} catch (Exception e) { // Possible deadlock in the yCoordinates algorithm
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setHeaderText("Error");
+				alert.setContentText(e.getMessage());
 				alert.showAndWait();
 			}
 		} catch (NumberFormatException | IOException e) {
@@ -90,6 +95,7 @@ public class App extends Application {
 			alert.setContentText("The selected directory does not contain all required log files.");
 			alert.showAndWait();
 		}
+		
 	 }
 	 
 	 /**

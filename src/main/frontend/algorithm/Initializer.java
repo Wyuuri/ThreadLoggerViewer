@@ -23,6 +23,7 @@ public class Initializer {
 	 * @return A HashMap that tells the message pointed out by each process.
 	 */
 	public static Map<String, Integer> initialize_MsgPointerList(List<String> pids) {
+		processMsgPointer.clear();
 		for(String process : pids) {
 			processMsgPointer.put(process, 0);
 		}
@@ -36,6 +37,7 @@ public class Initializer {
 	 * @return A HashMap that tells if each process is waiting for a "send" or not.
 	 */
 	public static Map<String, Boolean> initialize_WaitingProcessList(List<String> pids) {
+		waitingProcess.clear();
 		for(String process : pids) {
 			waitingProcess.put(process, false);
 		}
@@ -49,6 +51,7 @@ public class Initializer {
 	 * @return A HashMap that contains the last y coordinate of each process.
 	 */
 	public static Map<String, Integer> initialize_lastYList(List<String> pids) {
+		lastY.clear();
 		for(String process : pids) {
 			lastY.put(process, StyleUtils.STARTING_Y_COORDINATE);
 		}
@@ -62,6 +65,7 @@ public class Initializer {
 	 * @param yCoordinates - Processes messages y coordinate integer values
 	 */
 	public static void initialize_YcoordinatesList(List<String> pids, Map<String, List<Map<String, Integer>>> yCoordinates) {
+		yCoordinates.clear();
 		for(String process : pids) {
 			yCoordinates.put(process, new ArrayList<Map<String, Integer>>());
 		}

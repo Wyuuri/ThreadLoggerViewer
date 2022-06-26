@@ -16,13 +16,13 @@ public class LogUtils {
 	public static List<String> getAllProcessesNumbers(String tracePath) {
 		
 		//Creating a File object for directory
-	      File directoryPath = new File(tracePath);
+	    File directoryPath = new File(tracePath);
 	      
 		//List of all files and directories
-	      String contents[] = directoryPath.list();
+	    String contents[] = directoryPath.list();
 	      
 	    //List of processes numbers
-	      List<String> pids = new ArrayList<>();
+	    List<String> pids = new ArrayList<>();
 	    
 	    for(int i=0; i<contents.length && contents[i].endsWith(".log") && contents[i].matches(".*[0-9].*"); i++) {
 	    	pids.add(getProcessNumber(contents[i]));
@@ -32,16 +32,25 @@ public class LogUtils {
 	}
 	
 	/**
+	 * @param filename - Any log filename
+	 * @return Number of the process associated to the log file
+	 */
+	public static String getProcessNumber(String filename) {
+		Pattern pattern = Pattern.compile("(\\d+)");
+        Matcher matcher = pattern.matcher(filename);
+        matcher.find();
+        // Last number matched from path (NOT WORKING)
+        return matcher.group(matcher.groupCount());
+	}
+	
+	/**
 	 * @param path - Any path that contains a log filename
 	 * @return Number of the process associated to the log file
 	 */
-	public static String getProcessNumber(String path) {
-		Pattern pattern = Pattern.compile("(\\d+)");
-        Matcher matcher = pattern.matcher(path);
-        matcher.find();
-        
-        // Last number matched from path
-        return matcher.group(matcher.groupCount());
+	public static String getProcNumberFromPath(String path) {
+		File file = new File(path);
+		String logFile = file.getName();
+		return getProcessNumber(logFile);
 	}
 
 	/**

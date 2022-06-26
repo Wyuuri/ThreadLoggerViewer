@@ -38,6 +38,16 @@ public class LogFilesReader {
 	}
 	
 	/**
+	 * Cleans the maps of each app execution
+	 */
+	public static void cleanMaps() {
+		LogFilesReader.sortedMessages.clear();
+		LogFilesReader.sendMsg.clear();
+		LogFilesReader.deliverMsg.clear();
+		LogFilesReader.receiveMsg.clear();
+	}
+	
+	/**
 	 * Reads all log files recursively starting from the process' log file given. 
 	 * Every time a process spawns, this method is called and reads it.
 	 * 
@@ -50,7 +60,8 @@ public class LogFilesReader {
 	 * @throws IOException 
 	 */
 	public static void readLineByLine(String path) throws IOException {
-		String processNumber = LogUtils.getProcessNumber(path);
+		
+		String processNumber = LogUtils.getProcNumberFromPath(path);
 		List<String> myMessages = new ArrayList<>();
 		 
 		File file=new File(path); 

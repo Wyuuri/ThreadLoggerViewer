@@ -95,9 +95,21 @@ public class Painter {
 						else { x2 = xCoordinates.get(receiverProcess) + 10; }
 						y2 = y1;
 						
-						res += drawMsg(x1,y1, msg, exp);
-						res += drawMsg(x2,y2, deliverMessage, exp);
-						res += drawArrow(x1,y1,x2,y2);
+						// if X coordinates are different a straight arrow is drawn
+						// (y1 and y2 are the same)
+						if(x1 != xCoordinates.get(receiverProcess)) {
+							res += drawMsg(x1,y1, msg, exp);
+							res += drawMsg(x2,y2, deliverMessage, exp);
+							res += drawArrow(x1,y1,x2,y2);
+						}
+						// Otherwise a curve arrow is drawn
+						// (y1 and y2 are not the same)
+						else {
+							y2 += StyleUtils.GAP_Y_COORDINATE;
+							res += drawMsg(x1,y1, msg, exp);
+							res += drawMsg(x2,y2, deliverMessage, exp);
+							res += drawArrow(x1,y1,x1,y2);
+						}
 					}
 					else if(msg.contains(Constants.RECEIVE)) {
 						receiverProcess = receiveMsg.get(Algorithm.getMsgNumber(msg));
@@ -119,7 +131,13 @@ public class Painter {
 	 * @return The HTML elements in raw string, draws an arrow from the sender to the receiver process
 	 */
 	public static String drawArrow(int x1, int y1, int x2, int y2) {
-		return "<line class=\"arrow\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />\r\n";
+		// straight arrow
+		if (x1 != x2)
+			return "<line class=\"arrow\" x1=\""+ x1 +"\" y1=\""+ y1 +"\" x2=\""+ x2 +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />\r\n";
+		// curved arrow (80 is the width of the space and 10 is the arrow header width)
+		return "<line class=\"arrow\" x1=\""+ (x1 + 80) +"\" y1=\""+ y1 +"\" x2=\""+ x1  +"\" y2=\""+ y1 + "\" />\r\n"
+			+ "<line class=\"arrow\" x1=\""+ (x1 + 80) +"\" y1=\""+ y1 +"\" x2=\""+ (x1 + 80)  +"\" y2=\""+ y2 + "\" />\r\n"
+			+ "<line class=\"arrow\" x1=\""+ (x1 + 80) +"\" y1=\""+ y2 +"\" x2=\""+ (x1 + 10)  +"\" y2=\""+ y2 +"\" marker-end=\"url(#arrowhead)\" />\r\n";
 	}
 	
 	/**
