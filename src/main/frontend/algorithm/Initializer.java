@@ -14,20 +14,20 @@ public class Initializer {
 	
 	private static Map<String, Integer> lastY = new HashMap<>();
 	private static Map<String, Boolean> waitingProcess = new HashMap<>();
-	private static Map<String, Integer> processMsgPointer = new HashMap<>();
+	private static Map<String, Integer> processEventPointer = new HashMap<>();
 	
 	/**
 	 * Set initial values as 0.
 	 * 
 	 * @param pids - All processes numbers
-	 * @return A HashMap that tells the message pointed out by each process.
+	 * @return A HashMap that tells the event pointed out by each process.
 	 */
-	public static Map<String, Integer> initialize_MsgPointerList(List<String> pids) {
-		processMsgPointer.clear();
+	public static Map<String, Integer> initialize_EventPointerList(List<String> pids) {
+		processEventPointer.clear();
 		for(String process : pids) {
-			processMsgPointer.put(process, 0);
+			processEventPointer.put(process, 0);
 		}
-		return processMsgPointer;
+		return processEventPointer;
 	}
 	
 	/**
@@ -62,7 +62,7 @@ public class Initializer {
 	 * For each process, add an empty ArrayList<Map<String, Integer>>().
 	 * 
 	 * @param pids - All processes numbers
-	 * @param yCoordinates - Processes messages y coordinate integer values
+	 * @param yCoordinates - Processes events y coordinate integer values
 	 */
 	public static void initialize_YcoordinatesList(List<String> pids, Map<String, List<Map<String, Integer>>> yCoordinates) {
 		yCoordinates.clear();

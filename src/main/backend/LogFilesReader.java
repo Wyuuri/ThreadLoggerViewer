@@ -25,10 +25,10 @@ public class LogFilesReader {
 	private static final Pattern deliverPattern = Pattern.compile(Constants.DELIVER_REGEX);
 	private static final Pattern receivePattern = Pattern.compile(Constants.RECEIVE_REGEX);
 	
-	private static Map<String,List<String>> sortedMessages = new TreeMap<>();
-	private static Map<Integer,String> sendMsg = new HashMap<>();
-	private static Map<Integer,String> deliverMsg = new HashMap<>();
-	private static Map<Integer,String> receiveMsg = new HashMap<>();
+	private static Map<String,List<String>> sortedEvents = new TreeMap<>();
+	private static Map<Integer,String> sendEvents = new HashMap<>();
+	private static Map<Integer,String> deliverEvents = new HashMap<>();
+	private static Map<Integer,String> receiveEvents = new HashMap<>();
 	
 	/**
 	 * @param tracepath - The absolute path where all log files reside.
@@ -41,10 +41,10 @@ public class LogFilesReader {
 	 * Cleans the maps of each app execution
 	 */
 	public static void cleanMaps() {
-		LogFilesReader.sortedMessages.clear();
-		LogFilesReader.sendMsg.clear();
-		LogFilesReader.deliverMsg.clear();
-		LogFilesReader.receiveMsg.clear();
+		LogFilesReader.sortedEvents.clear();
+		LogFilesReader.sendEvents.clear();
+		LogFilesReader.deliverEvents.clear();
+		LogFilesReader.receiveEvents.clear();
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class LogFilesReader {
 		        matcher.find();
 		        
 		        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
-				sendMsg.put(number, processNumber);
+				sendEvents.put(number, processNumber);
 				myMessages.add(Constants.SEND +" "+ number);
 			}
 			else if(LogUtils.isDeliver(line)) {
@@ -89,7 +89,7 @@ public class LogFilesReader {
 		        matcher.find();
 		        
 		        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
-				deliverMsg.put(number, processNumber);
+				deliverEvents.put(number, processNumber);
 				myMessages.add(Constants.DELIVER +" "+ number);
 			}
 			else if(LogUtils.isReceive(line)) {
@@ -97,7 +97,7 @@ public class LogFilesReader {
 		        matcher.find();
 		        
 		        number = Integer.valueOf(line.substring(matcher.end(), line.indexOf("}")));
-				receiveMsg.put(number, processNumber);
+				receiveEvents.put(number, processNumber);
 				myMessages.add(Constants.RECEIVE+" "+ number);
 			}
 			else if(LogUtils.isSpawn(line)) {
@@ -115,7 +115,7 @@ public class LogFilesReader {
 		/* System.out.println("Contents of File: ");  
 		   System.out.println(sb.toString());  */  
 	
-		sortedMessages.put(processNumber, myMessages);
+		sortedEvents.put(processNumber, myMessages);
 	}
 	
 	/**
@@ -155,8 +155,8 @@ public class LogFilesReader {
 	 * @return key: send message number
 	 * 		 value: process number (String) that contains this message
 	 */
-	public static Map<Integer,String> getSendMsg( ) {
-		return sendMsg;
+	public static Map<Integer,String> getSendEvents( ) {
+		return sendEvents;
 	}
 	
 	/**
@@ -164,8 +164,8 @@ public class LogFilesReader {
 	 * 		 value: process number (String) that contains this message
 	 */
 	
-	public static Map<Integer,String> getDeliverMsg( ) {
-		return deliverMsg;
+	public static Map<Integer,String> getDeliverEvents( ) {
+		return deliverEvents;
 	}
 	
 	/**
@@ -173,8 +173,8 @@ public class LogFilesReader {
 	 * 		 value: process number (String) that contains this message
 	 */
 	
-	public static Map<Integer,String> getReceiveMsg( ) {
-		return receiveMsg;
+	public static Map<Integer,String> getReceiveEvents( ) {
+		return receiveEvents;
 	}
 	
 	/**
@@ -182,7 +182,7 @@ public class LogFilesReader {
 	 * 		 value: List of messages of this process
 	 */
 
-	public static Map<String, List<String>> getSortedMessages() {
-		return sortedMessages;
+	public static Map<String, List<String>> getSortedEvents() {
+		return sortedEvents;
 	}
 }

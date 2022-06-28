@@ -10,9 +10,9 @@ import main.frontend.algorithm.Algorithm;
 
 public class Painter {
 	
-	private final static Map<Integer,String> sendMsg = LogFilesReader.getSendMsg();
-	private final static Map<Integer,String> deliverMsg = LogFilesReader.getDeliverMsg();
-	private final static Map<Integer,String> receiveMsg = LogFilesReader.getReceiveMsg();
+	private final static Map<Integer,String> sendEvents = LogFilesReader.getSendEvents();
+	private final static Map<Integer,String> deliverEvents = LogFilesReader.getDeliverEvents();
+	private final static Map<Integer,String> receiveEvents = LogFilesReader.getReceiveEvents();
 
 	/**
 	 * @param svg_width - The width of the SVG element.
@@ -81,11 +81,11 @@ public class Painter {
 			for(int i=0; i < coordinates.size(); i++) {
 				for(String msg : coordinates.get(i).keySet()) {
 					if(msg.contains(Constants.SEND)) {
-						msgNumber = Algorithm.getMsgNumber(msg);
+						msgNumber = Algorithm.getEventNumber(msg);
 						deliverMessage = Constants.DELIVERY+" "+msgNumber;
 						
-						senderProcess = sendMsg.get(msgNumber);
-						receiverProcess = deliverMsg.get(msgNumber);
+						senderProcess = sendEvents.get(msgNumber);
+						receiverProcess = deliverEvents.get(msgNumber);
 						
 						x1 = xCoordinates.get(senderProcess);
 						y1 = coordinates.get(i).get(msg);
@@ -112,7 +112,7 @@ public class Painter {
 						}
 					}
 					else if(msg.contains(Constants.RECEIVE)) {
-						receiverProcess = receiveMsg.get(Algorithm.getMsgNumber(msg));
+						receiverProcess = receiveEvents.get(Algorithm.getEventNumber(msg));
 						x2 = xCoordinates.get(receiverProcess);
 						y2 = coordinates.get(i).get(msg);
 						res += drawReceivePoint(x2, y2, msg);
