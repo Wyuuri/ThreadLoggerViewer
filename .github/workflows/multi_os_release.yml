@@ -1,0 +1,86 @@
+name: MULTI_OS_RELEASE
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  # LINUX RELEASE
+  build-on-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Checkout the main github branch
+        uses: actions/checkout@v2
+      - name: Step 2 - Create release directory and copy jar and resources
+        run: |
+          mkdir ThreadLoggerViewer
+          cp dist/app.jar ThreadLoggerViewer/
+          cp -r resources ThreadLoggerViewer/
+      - name: Step 3 - Download jdk 17
+        run: |
+          cd ThreadLoggerViewer
+          wget -O jdk17.tar.gz https://download.oracle.com/java/17/archive/jdk-17.0.3.1_linux-x64_bin.tar.gz
+          cd ..
+      - name: Step 4 - Download javafx 18
+        run: |
+          cd ThreadLoggerViewer
+          wget -O jfx18.zip https://download2.gluonhq.com/openjfx/18.0.1/openjfx-18.0.1_linux-x64_bin-sdk.zip
+          cd ..
+      - name: Step 5 - Decompress downloaded files
+        run: |
+          cd ThreadLoggerViewer
+          mkdir jdk17 && tar -xzf jdk17.tar.gz && cp -r jdk-17.0.3.1/* jdk17/
+          rm jdk17.tar.gz
+          rm -r jdk-17.0.3.1
+          mkdir jfx18 && unzip jfx18.zip && cp -r javafx-sdk-18.0.1/* jfx18/
+          rm jfx18.zip
+          rm -r javafx-sdk-18.0.1
+          cd ..
+      - name: Step 6 - Create launch script and compress the release
+        run: |
+          echo -e "#!/bin/bash\nchmod -R a+x *\n./jdk17/bin/java --module-path "./jfx18/lib/" --add-modules javafx.controls,javafx.fxml,javafx.web -jar ./app.jar" > ThreadLoggerViewer/ThreadLoggerViewer.sh
+          tar -czf linux_x86_64.tar.gz ThreadLoggerViewer
+      - name: Step 7 - Upload artifact 
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux
+          path: linux_x86_64.tar.gz
+
+  # WINDOWS RELEASE
+  build-on-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Step 1 - Checkout the main github branch
+        uses: actions/checkout@v2
+      - name: Step 2 - Create release directory and copy jar, resources and binary launcher
+        run: |
+          New-Item "ThreadLoggerViewer" -ItemType Directory
+          Copy-Item -Path ".\dist\app.jar" -Destination ".\ThreadLoggerViewer\"
+          Copy-Item -Path ".\dist\ThreadLoggerViewer.exe" -Destination ".\ThreadLoggerViewer\"
+          Copy-Item -Recurse -Path ".\resources" -Destination ".\ThreadLoggerViewer"
+      - name: Step 3 - Download jdk 17
+        run: PowerShell Invoke-WebRequest -OutFile ThreadLoggerViewer/jdk17.zip -URI https://download.oracle.com/java/17/archive/jdk-17.0.3.1_windows-x64_bin.zip
+      - name: Step 4 - Download javafx 18
+        run: PowerShell Invoke-WebRequest -OutFile ThreadLoggerViewer/jfx18.zip -URI https://download2.gluonhq.com/openjfx/18.0.1/openjfx-18.0.1_windows-x64_bin-sdk.zip
+      - name: Step 5 - Decompress downloaded files
+        run: |
+          Expand-Archive -LiteralPath ".\ThreadLoggerViewer\jdk17.zip" -DestinationPath ".\ThreadLoggerViewer" -Force 
+          Remove-Item ".\ThreadLoggerViewer\jdk17.zip"
+          Rename-Item ".\ThreadLoggerViewer\jdk-17.0.3.1" "jdk17"
+          Expand-Archive -LiteralPath ".\ThreadLoggerViewer\jfx18.zip" -DestinationPath ".\ThreadLoggerViewer" -Force 
+          Remove-Item ".\ThreadLoggerViewer\jfx18.zip"
+          Rename-Item ".\ThreadLoggerViewer\javafx-sdk-18.0.1" "jfx18"
+      - name: Step 6 - Create launch executable and compress the release
+        run: |
+          Write-Output '# To convert to exe file:' > ".\ThreadLoggerViewer\launch.ps1"
+          Write-Output '# 1- Install ps2exe: Install-Module -Name ps2exe' >> ".\ThreadLoggerViewer\launch.ps1"
+          Write-Output '# 2- Convert launch.ps1 to launch.exe: ps2exe launch.ps1' >> ".\ThreadLoggerViewer\launch.ps1"
+          Write-Output '.\jdk17\bin\java.exe --module-path ".\jfx18\lib\" --add-modules javafx.controls,javafx.fxml,javafx.web -jar .\app.jar' >> ".\ThreadLoggerViewer\launch.ps1"
+          Compress-Archive -LiteralPath 'ThreadLoggerViewer' -DestinationPath "windows_x86_64.zip"
+      - name: Step 7 - Upload artifact 
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows
+          path: windows_x86_64.zip

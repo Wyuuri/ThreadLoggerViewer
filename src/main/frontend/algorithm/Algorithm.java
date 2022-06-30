@@ -118,13 +118,13 @@ public class Algorithm {
 	                	
 	                	// If the processes are the same it can mean that it is making a "send" on itself.
 	                    if (senderProcess.equals(deliverProcess)) {
-	                    	// Bypassing send message
+	                    	// Bypassing "send" event
 	                    	eventPointer2 = processEventPointer.get(senderProcess) + 1;
 	                    	// Avoid IndexOutOfBounds
 	                    	if(eventPointer2 >= events2.size()) continue;
 	                    	event2 = events2.get(eventPointer2);
 	                    	
-	                    	// It is making a "send" on itself only if msgNumber are the same
+	                    	// It is making a "send" on itself only if eventNumber are the same
 		                    if (getEventNumber(event2).intValue() == getEventNumber(event).intValue()) {
 		                    	loop_count = 0; 
 		                	    // Y coordinate calculation (send)
