@@ -72,7 +72,7 @@ jobs:
           Expand-Archive -LiteralPath ".\ThreadLoggerViewer\jfx18.zip" -DestinationPath ".\ThreadLoggerViewer" -Force 
           Remove-Item ".\ThreadLoggerViewer\jfx18.zip"
           Rename-Item ".\ThreadLoggerViewer\javafx-sdk-18.0.1" "jfx18"
-      - name: Step 6 - Create launch executable and compress the release
+      - name: Step 6 - Create launch script and compress the release
         run: |
           Write-Output '# To convert to exe file:' > ".\ThreadLoggerViewer\launch.ps1"
           Write-Output '# 1- Install ps2exe: Install-Module -Name ps2exe' >> ".\ThreadLoggerViewer\launch.ps1"
